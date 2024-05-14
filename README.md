@@ -4,7 +4,7 @@ Supported KSP version: 1.12.5
 I can't tell anything about the other versions since I'm only using 1.12.5. It is very likely that KSP 1.12.x and lower will work fine, but this is not guaranteed.
 
 The work was originally started by russnash37 who gave a permission to Ser (SerTheGreat) to take over and extend [his project](https://forum.kerbalspaceprogram.com/topic/95579-plugin-090-wip-g-force-v004-alpha-experience-the-effects-of-g-forces-on-your-kerbals).<br/>
-Ser has maintained the project until [KSP 1.3](https://forum.kerbalspaceprogram.com/topic/113341-130-122-g-effects-blackouts-redouts-g-locs-v042-2017-jun-25/)
+Ser has maintained the project until [KSP 1.3](https://forum.kerbalspaceprogram.com/topic/113341-130-122-g-effects-blackouts-redouts-g-locs-v042-2017-jun-25/).<br/>
 Since Ser and russnash37 weren't active on github or the KSP forum for a long time I wasn't able to ask them for permission, but because is listed under the GPLv3 this permission is not necessary.
 
 Ser tried to make focus on realism as much as he was able to research the subject so the default settings assume that all kerbals including tourists are trained astronauts wearing G-suits.
