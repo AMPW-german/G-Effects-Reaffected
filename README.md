@@ -1,10 +1,12 @@
 # G-Effects mod for Kerbal Space Program
 
-Suppoted KSP version: 1.2.2
+Supported KSP version: 1.12.5
+I can't tell anything about the other versions since I'm only using 1.12.5. It is very likely that KSP 1.12.x and lower will work fine, but this is not guaranteed.
 
-The work was originally started by russnash37 who gave a permission to take over and extend [his project] (http://forum.kerbalspaceprogram.com/threads/106055)
+The work was originally started by russnash37 who gave a permission to Ser (SerTheGreat) to take over and extend [his project] ([https://forum.kerbalspaceprogram.com/topic/95579-plugin-090-wip-g-force-v004-alpha-experience-the-effects-of-g-forces-on-your-kerbals]).
+Ser has maintained the project until [KSP 1.3] ([https://forum.kerbalspaceprogram.com/topic/113341-130-122-g-effects-blackouts-redouts-g-locs-v042-2017-jun-25/])
 
-I've tried to make focus on realism as much as I was able to research the subject so the default settings assume that all kerbals including tourists are trained astronauts wearing G-suits.
+Ser tried to make focus on realism as much as he was able to research the subject so the default settings assume that all kerbals including tourists are trained astronauts wearing G-suits.
 Pilots are more trained than others, of course.
 
 **The following G-effects are simulated:**
@@ -20,7 +22,9 @@ G forces have different severity in four directions: upward, downward, backward,
 a kerbal piloting a plane upside down on a circular trajectory.
 Kerbal's specialization also affects how much he can stand.
 
-You can use this mod together with [KeepFit](https://github.com/timmersuk/Timmers_KSP/releases) by timmers_uk. In this case kerbal fitness will affect their ability to withstand over G effects (supported by G-Effects v0.2.3+ and KeepFit v0.8.3.3+).
+**IMPORTANT**
+Currently a simple picture is used as an overlay which affects the entire KSP window, including the UI.
+Until I figured out how to use the shader correctly (not my main priority) it'll stay that way.
 
 **Installation:**
 
@@ -37,6 +41,5 @@ _The sounds are still a little WIP so you always have an option to disable them 
 - Effects are calculated for the active vessel's crew only. You can switch to another vessel and back and have effects applied as if they have just started.
 
 **To be implemented:**
-
-- Simulation of loss of orientation after G-LOC
-- Taking into account ship's rotation
+In-Game menu
+using Shaders instead of pictures
