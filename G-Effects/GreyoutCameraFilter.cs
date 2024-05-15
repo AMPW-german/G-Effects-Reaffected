@@ -41,12 +41,13 @@ namespace G_Effects
 			this.magnitude = magnitude;
 		}
 		
+		/*
 		void OnRenderImage(RenderTexture source, RenderTexture dest) {
 			if ((material != null) && !bypass) {
 				material.SetFloat("_Magnitude", magnitude);
 				Graphics.Blit(source, dest, material);
 			}
-		}
+		}*/
 		
 		private static Material createMaterial(string shaderName) {
 			string path = KSP.IO.IOUtils.GetFilePathFor(typeof(G_Effects), "shaders.bundle").Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
