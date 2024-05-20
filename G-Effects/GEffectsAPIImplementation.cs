@@ -23,7 +23,11 @@ namespace G_Effects
 		}
 		
 		internal void setKerbalStates(Dictionary<string, KerbalGState> kerbalStates) {
-			this.kerbalStates = kerbalStates;
+            if (TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1)
+            {
+                return;
+            }
+            this.kerbalStates = kerbalStates;
 		}
 		
 		KerbalGState getKerbalState(string kerbalName) {
