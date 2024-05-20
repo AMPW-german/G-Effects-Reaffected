@@ -58,7 +58,7 @@ namespace G_Effects
 		
 		//This is for G effects persistance
 		Dictionary<string, KerbalGState> kerbalGDict = new Dictionary<string, KerbalGState>();
-		
+
 		protected void Start()
 		{	
 			gEffectsApiImpl.setKerbalStates(kerbalGDict);
@@ -113,8 +113,8 @@ namespace G_Effects
 				FlightGlobals.ActiveVessel.ctrlState.NeutralizeStick();
 			}
 		}
-		
-		void onPause() {
+
+        void onPause() {
 			paused = true;
 			gAudio.pauseAllSounds(true);
 		}
@@ -357,7 +357,7 @@ namespace G_Effects
 		}
 		
 		void loseConsciousness(ProtoCrewMember crewMember, KerbalGState kerbalGData, bool isCommander, bool outputAllowed) {
-			kerbalGData.stopAGSM(0);
+            kerbalGData.stopAGSM(0);
 			kerbalGData.resetBreath();
 			kerbalGData.gLocFadeAmount += conf.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
 			if (kerbalGData.gLocFadeAmount > G_Effects.MAX_GLOC_FADE) {
@@ -412,7 +412,11 @@ namespace G_Effects
 		
 		void OnGUI()
 		{
-		    if (Event.current.type == EventType.Repaint || Event.current.isMouse)
+            if (paused || TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1)
+            {
+                return;
+            }
+            if (Event.current.type == EventType.Repaint || Event.current.isMouse)
 		    {
 		    	//Predraw
 		    }
