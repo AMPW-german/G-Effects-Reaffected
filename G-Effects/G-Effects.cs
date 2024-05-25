@@ -4,6 +4,18 @@ using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using KSP.UI.Screens.Flight;
+using static GameEvents;
+using static SoftMasking.SoftMask;
+using static UnityEngine.TouchScreenKeyboard;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
+using TMPro;
+using Debug = UnityEngine.Debug;
+using Experience.Effects;
+using Smooth.Compare;
+
 
 namespace G_Effects
 {
@@ -28,9 +40,9 @@ namespace G_Effects
 	[KSPAddon(KSPAddon.Startup.Flight, false)]
 	public class G_Effects : MonoBehaviour
 	{
-		
-		//TODO find a way to disable EVA button on G-LOC
-		//TODO simulate orientation loss on G-LOC
+
+        //TODO find a way to disable EVA button on G-LOC
+        //TODO simulate orientation loss on G-LOC
 		
 		GEffectsAPIImplementation gEffectsApiImpl = GEffectsAPIImplementation.instance();
 		KeepFit.KeepFitAPI keepFitAPI = new KeepFit.KeepFitAPI();
@@ -44,15 +56,18 @@ namespace G_Effects
 		double downwardG;
 		double forwardG;
 		bool playEffects = false;
-		bool greyOutAllowed = false;
 		bool paused = false;
 
-		Configuration conf = new Configuration();
 		GEffectsAudio gAudio = new GEffectsAudio();
 		GEffectsVisuals visuals;
-		
-		//Specialization priority to be a commander
-		Dictionary<string, int> priorities = new Dictionary<string, int>() {
+
+		//UI
+        private PopupDialog UI;
+        public bool showUI = false;
+        private float textPos = 0;
+
+        //Specialization priority to be a commander
+        Dictionary<string, int> priorities = new Dictionary<string, int>() {
 			{"pilot", 3}, {"engineer", 2}, {"scientist", 2}, {"tourist", 0}
 		};
 		
@@ -82,9 +97,9 @@ namespace G_Effects
 				FlightGlobals.ActiveVessel.FallBackReferenceTransform();
 			}
 			FlightGlobals.ActiveVessel.SetReferenceTransform(FlightGlobals.ActiveVessel.GetReferenceTransformPart(), true);
-		}
-		
-		protected void OnDestroy() {
+        }
+
+        protected void OnDestroy() {
 			//RenderingManager.RemoveFromPostDrawQueue(3, new Callback(drawGEffects));
 			GameEvents.onGamePause.Remove(onPause);
 			GameEvents.onGameUnpause.Remove(onUnPause);
@@ -144,18 +159,75 @@ namespace G_Effects
 		}
 		
 		protected void Awake() {
-			conf.loadConfiguration(APP_NAME.ToUpper());
+			Configuration.loadConfiguration(APP_NAME.ToUpper());
 			
 			if (!gAudio.isInitialized()) {
-				gAudio.initialize(conf.gruntsVolume, conf.breathVolume, conf.heartBeatVolume, conf.femaleVoicePitch, conf.breathSoundPitch);
+				gAudio.initialize(Configuration.gruntsVolume, Configuration.breathVolume, Configuration.heartBeatVolume, Configuration.femaleVoicePitch, Configuration.breathSoundPitch);
 			}
 			
-			visuals = GEffectsVisuals.initialize(conf);
+			visuals = GEffectsVisuals.initialize();
 			
 			GameParameters.AdvancedParams pars = HighLogic.CurrentGame.Parameters.CustomParams<GameParameters.AdvancedParams>();
 			pars.GKerbalLimits = false;
 		}
-		
+
+        internal void Update()
+        {
+            if (GameSettings.MODIFIER_KEY.GetKey() && UnityEngine.Input.GetKeyDown(KeyCode.F8)
+                && HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+				DialogGUILabel gResistance = new DialogGUILabel($"G-Resistance: {Configuration.gResistance}", 280f);
+				DialogGUILabel volume = new DialogGUILabel($"Volume: {Configuration.masterVolume}", 280f);
+                if (UI == null)
+                {
+                    UI = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
+                        new Vector2(0.5f, 0.5f),
+                        new MultiOptionDialog(
+                            "gEffectsUi",
+                            "",
+                            "G-Effects reaffected options",
+                            UISkinManager.defaultSkin,
+                            new Rect(0.5f, 0.5f, 300f, 120f),
+                            new DialogGUIFlexibleSpace(),
+                            new DialogGUIVerticalLayout(
+                                new DialogGUIFlexibleSpace(),
+								new DialogGUILabel("G-Effects reaffected"),
+								gResistance,
+                                new DialogGUITextInput(Configuration.gResistance.ToString(), false, 50, (string inputText) => {
+									if (float.TryParse(inputText, out float value))
+									{
+										writeLog(value.ToString());
+										Configuration.gResistance = value;
+										gResistance.SetOptionText($"G-Resistance: {Configuration.gResistance}");
+										return value.ToString();
+									}
+									else
+									{
+										return Configuration.gResistance.ToString();
+									}
+                                }, 25f),
+                                new DialogGUIToggle(Configuration.IVAGreyout, "IVA g-effects", (bool newState) => { Configuration.IVAGreyout = newState; }),
+                                new DialogGUIToggle(Configuration.mainCamGreyout, "Maincam g-effects", (bool newState) => { Configuration.mainCamGreyout = newState; }),
+                                volume,
+                                new DialogGUISlider(() => Configuration.masterVolume, 0f, 5f, false, 280f, 10, (newValue) => { Configuration.masterVolume = newValue; writeLog(Configuration.masterVolume.ToString()); volume.SetOptionText($"Volume: {Configuration.masterVolume}");
+                                }),
+								new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true)
+                                )),
+                        false,
+                        UISkinManager.defaultSkin);
+                }
+                else
+                {
+					
+                    UI.Dismiss();
+                    UI = null;
+                }
+            }
+
+            float offsetY = textPos;
+            float h;
+        }
+
 		public void FixedUpdate() {
 			
 			applyControlLock();
@@ -203,10 +275,13 @@ namespace G_Effects
 			bool isIVA = CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA;
 			
 			playEffects = (commander != null) &&
-				(!conf.IVAOnly || isIVA) &&
+				(
+                (Configuration.IVAGreyout && isIVA) ||
+				(Configuration.mainCamGreyout && !isIVA)
+				) &&
 				!MapView.MapIsEnabled;
 			
-			greyOutAllowed = isIVA && conf.IVAGreyout || !isIVA && conf.mainCamGreyout;
+			//greyOutAllowed = isIVA && Configuration.IVAGreyout || !isIVA && Configuration.mainCamGreyout;
 			visuals.flightCameraFilter.setBypass(isIVA || !playEffects);
 			visuals.internalCameraFilter.setBypass(!isIVA || !playEffects);
 			gAudio.setAudioEnabled(playEffects);
@@ -221,14 +296,14 @@ namespace G_Effects
 			
 				KerbalGState gState;
 				if (!kerbalGDict.TryGetValue(crewMember.name, out gState)) {
-					gState = new KerbalGState(conf);
+					gState = new KerbalGState();
 					kerbalGDict.Add(crewMember.name, gState);
 				}
 				//Calculate modifer by Kerbal individual charateristics
 				float kerbalModifier = 1;
-				conf.traitModifiers.TryGetValue(crewMember.experienceTrait.Title, out kerbalModifier);
+                Configuration.traitModifiers.TryGetValue(crewMember.experienceTrait.Title, out kerbalModifier);
 				if (crewMember.gender == ProtoCrewMember.Gender.Female) {
-					kerbalModifier *= conf.femaleModifier;
+					kerbalModifier *= Configuration.femaleModifier;
 				}
 				float? keepFitFitnessModifier = keepFitAPI.getFitnessGeeToleranceModifier(crewMember.name);
 				if (keepFitFitnessModifier != null) {
@@ -242,18 +317,18 @@ namespace G_Effects
 				gState.previousAcceleration = cabinAcceleration;
 				gState.downwardG = cabinAcceleration.z / G_CONST; //These are true G values
 				gState.forwardG = cabinAcceleration.y / G_CONST;
-				downwardG = gState.downwardG * (gState.downwardG-1 > 0 ? conf.downwardGMultiplier : conf.upwardGMultiplier);//These are modified G values for usage in further calculations
-				forwardG = gState.forwardG * (gState.forwardG > 0 ? conf.forwardGMultiplier : conf.backwardGMultiplier);
+				downwardG = gState.downwardG * (gState.downwardG-1 > 0 ? Configuration.downwardGMultiplier : Configuration.upwardGMultiplier);//These are modified G values for usage in further calculations
+				forwardG = gState.forwardG * (gState.forwardG > 0 ? Configuration.forwardGMultiplier : Configuration.backwardGMultiplier);
 				
 				float deltaTime = TimeWarp.fixedDeltaTime;
-				gState.cumulativeG -= Math.Sign(gState.cumulativeG) * conf.gResistance * kerbalModifier * deltaTime;
+				gState.cumulativeG -= Math.Sign(gState.cumulativeG) * Configuration.gResistance * kerbalModifier * deltaTime;
 				//gAudio.applyFilter(1 - Mathf.Clamp01((float)(1.25 * Math.Pow(Math.Abs(gData.cumulativeG) / conf.MAX_CUMULATIVE_G, 2) - 0.2)));
 				if (crewMember.Equals(commander)) {
 					visuals.doGreyout(gState);
 				}
-				if ((downwardG > conf.positiveThreshold) || (downwardG < conf.negativeThreshold) || (forwardG > conf.positiveThreshold) || (forwardG < conf.negativeThreshold)) {
+				if ((downwardG > Configuration.positiveThreshold) || (downwardG < Configuration.negativeThreshold) || (forwardG > Configuration.positiveThreshold) || (forwardG < Configuration.negativeThreshold)) {
 					
-					double rebCompensation = conf.gResistance * kerbalModifier - conf.deltaGTolerance * conf.deltaGTolerance / kerbalModifier; //this is calculated so the rebound is in equilibrium with cumulativeG at the very point of G threshold
+					double rebCompensation = Configuration.gResistance * kerbalModifier - Configuration.deltaGTolerance * Configuration.deltaGTolerance / kerbalModifier; //this is calculated so the rebound is in equilibrium with cumulativeG at the very point of G threshold
 					gState.cumulativeG += 
 						(Math.Sign(downwardG-1+forwardG) * rebCompensation + (Math.Abs(downwardG-1)*(downwardG-1) + Math.Abs(forwardG) * forwardG) / kerbalModifier) * deltaTime;
 					gAudio.stopBreath();
@@ -264,14 +339,14 @@ namespace G_Effects
 						gAudio.stopHeartBeats();
 					} else if (crewMember.Equals(commander)) {
 						//Positive and frontal G sound effects
-						if( ((downwardG > conf.positiveThreshold) || (forwardG > conf.positiveThreshold)) && (gState.cumulativeG > 0.1 * conf.MAX_CUMULATIVE_G)) {
+						if( ((downwardG > Configuration.positiveThreshold) || (forwardG > Configuration.positiveThreshold)) && (gState.cumulativeG > 0.1 * Configuration.MAX_CUMULATIVE_G)) {
 							//gData.needBreath = Mathf.Max(gData.needBreath, (gData.cumulativeG > 0.6 * conf.MAX_CUMULATIVE_G) ? (int)(MAX_BREATHS * gData.getSeverity() - 1) : 0);
 							gState.startAGSM(Planetarium.GetUniversalTime());
 							gAudio.playGrunt(commander.gender.Equals(ProtoCrewMember.Gender.Female), -1f /*(float)((Math.Max(Math.Max(downwardG, forwardG), 10.0 + conf.positiveThreshold) - conf.positiveThreshold) / 10.0)*/);
 							//Negative G sound effects
-						} else if (gState.cumulativeG < -0.1 * conf.MAX_CUMULATIVE_G) {
+						} else if (gState.cumulativeG < -0.1 * Configuration.MAX_CUMULATIVE_G) {
 							if (gAudio.isHeartBeatsPlaying()) {
-								gAudio.setHeartBeatsVolume(Math.Min((float)(2 * Math.Abs(gState.cumulativeG + 0.1 * conf.MAX_CUMULATIVE_G) /(1 - 0.1) / conf.MAX_CUMULATIVE_G * conf.heartBeatVolume * GameSettings.VOICE_VOLUME), GameSettings.VOICE_VOLUME * conf.heartBeatVolume));
+								gAudio.setHeartBeatsVolume(Math.Min((float)(2 * Math.Abs(gState.cumulativeG + 0.1 * Configuration.MAX_CUMULATIVE_G) /(1 - 0.1) / Configuration.MAX_CUMULATIVE_G * Configuration.heartBeatVolume * GameSettings.VOICE_VOLUME), GameSettings.VOICE_VOLUME * Configuration.heartBeatVolume));
 							} else {
 								gAudio.playHeartBeats();
 							}
@@ -284,12 +359,12 @@ namespace G_Effects
 					int breathNeeded = gState.getBreathNeeded();
 					if ((breathNeeded > 0) && (gState.gLocFadeAmount == 0)) {
 						if (gAudio.tryPlayBreath(commander.gender.Equals(ProtoCrewMember.Gender.Female),
-						                         UnityEngine.Random.Range((float)Mathf.Clamp(breathNeeded - 2, 1, conf.maxBreaths), (float)breathNeeded) / (float)conf.maxBreaths * conf.breathVolume * GameSettings.VOICE_VOLUME,
-						                         1f - 0.2f * (1 - (float)breathNeeded / (float)conf.maxBreaths))) {
+						                         UnityEngine.Random.Range((float)Mathf.Clamp(breathNeeded - 2, 1, Configuration.maxBreaths), (float)breathNeeded) / (float)Configuration.maxBreaths * Configuration.breathVolume * GameSettings.VOICE_VOLUME,
+						                         1f - 0.2f * (1 - (float)breathNeeded / (float)Configuration.maxBreaths))) {
 							gState.takeBreath();
 						}
 					}
-					if (Math.Abs(gState.cumulativeG) < 0.1 * conf.MAX_CUMULATIVE_G) {
+					if (Math.Abs(gState.cumulativeG) < 0.1 * Configuration.MAX_CUMULATIVE_G) {
 						reboundConsciousness(crewMember, gState, crewMember.Equals(commander));
 					}
 				}
@@ -305,7 +380,7 @@ namespace G_Effects
 				writeDebug("crew=" + crewMember.name + " cumulativeG=" + gState.cumulativeG);
 				
 				//If out of danger then stop negative G sound effects
-				if (gState.cumulativeG > -0.3 * conf.MAX_CUMULATIVE_G) {
+				if (gState.cumulativeG > -0.3 * Configuration.MAX_CUMULATIVE_G) {
 					gAudio.stopHeartBeats();
 				}
 
@@ -321,8 +396,8 @@ namespace G_Effects
 		//(Acceleration of a kerbal going EVA is about 44G)
 		Vector3d dampAcceleration(Vector3d current_acc, Vector3d prev_acc) {
 			double magnitude = (current_acc - prev_acc).magnitude;
-			if ((current_acc - prev_acc).magnitude > conf.gDampingThreshold * G_CONST) {
-				writeLog("Peak detected. G="+((current_acc - prev_acc).magnitude / G_CONST) + " threshold="+conf.gDampingThreshold);
+			if ((current_acc - prev_acc).magnitude > Configuration.gDampingThreshold * G_CONST) {
+				writeLog("Peak detected. G="+((current_acc - prev_acc).magnitude / G_CONST) + " threshold="+Configuration.gDampingThreshold);
 				return prev_acc;
 			} else {
 				return current_acc;
@@ -359,14 +434,14 @@ namespace G_Effects
 		void loseConsciousness(ProtoCrewMember crewMember, KerbalGState kerbalGData, bool isCommander, bool outputAllowed) {
             kerbalGData.stopAGSM(0);
 			kerbalGData.resetBreath();
-			kerbalGData.gLocFadeAmount += conf.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
+			kerbalGData.gLocFadeAmount += Configuration.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
 			if (kerbalGData.gLocFadeAmount > G_Effects.MAX_GLOC_FADE) {
 				kerbalGData.gLocFadeAmount = G_Effects.MAX_GLOC_FADE;
 				if (isCommander) {
 					GEffectsAudio.prepareAudioSources(FindObjectsOfType(typeof(AudioSource)) as AudioSource[]); //a barbarian way to prevent audiosources from being immune to G-LOC mute
-					if (outputAllowed && (conf.gLocScreenWarning != null) && (conf.gLocScreenWarning.Length > 0) &&
+					if (outputAllowed && (Configuration.gLocScreenWarning != null) && (Configuration.gLocScreenWarning.Length > 0) &&
 					   !HighLogic.CurrentGame.Parameters.CustomParams<GameParameters.AdvancedParams>().GKerbalLimits) {
-						ScreenMessages.PostScreenMessage(conf.gLocScreenWarning);
+						ScreenMessages.PostScreenMessage(Configuration.gLocScreenWarning);
 					}
 					Vessel vessel = crewMember.KerbalRef.InVessel;
 					if (!hasProbeCore(vessel)) {
@@ -380,7 +455,7 @@ namespace G_Effects
 		
 		
 		void reboundConsciousness(ProtoCrewMember crewMember, KerbalGState kerbalGData, bool isCommander) {
-			kerbalGData.gLocFadeAmount -= conf.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
+			kerbalGData.gLocFadeAmount -= Configuration.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
 			if (kerbalGData.gLocFadeAmount <= 0) {
 				kerbalGData.gLocFadeAmount = 0;
 				if (isCommander) {
@@ -407,23 +482,17 @@ namespace G_Effects
 		void passValuesToStock(ProtoCrewMember crewMember, KerbalGState gState) {
 			GameParameters.AdvancedParams pars = HighLogic.CurrentGame.Parameters.CustomParams<GameParameters.AdvancedParams>();
 			crewMember.gExperienced = 
-				Math.Abs(gState.cumulativeG) / conf.GLOC_CUMULATIVE_G * PhysicsGlobals.KerbalGThresholdLOC * pars.KerbalGToleranceMult * ProtoCrewMember.GToleranceMult(crewMember);
+				Math.Abs(gState.cumulativeG) / Configuration.GLOC_CUMULATIVE_G * PhysicsGlobals.KerbalGThresholdLOC * pars.KerbalGToleranceMult * ProtoCrewMember.GToleranceMult(crewMember);
 		}
 		
 		void OnGUI()
 		{
-            if (paused || TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1)
+            if (paused || 
+				TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1 || 
+				!playEffects)
             {
                 return;
             }
-            if (Event.current.type == EventType.Repaint || Event.current.isMouse)
-		    {
-		    	//Predraw
-		    }
-		    
-		    if (!playEffects) {
-				return;
-			} 
 			
 		    KerbalGState kerbalGData;
 			if ((commander == null) || !kerbalGDict.TryGetValue(commander.name, out kerbalGData)) {
@@ -436,7 +505,7 @@ namespace G_Effects
 		
 		
 		void writeDebug(string text) {
-			if (conf.enableLogging) {
+			if (Configuration.enableLogging) {
 				writeLog(text);
 			}
 		}

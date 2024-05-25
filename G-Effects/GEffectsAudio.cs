@@ -73,7 +73,7 @@ namespace G_Effects
         		gruntAudio = audioPlayer.AddComponent<AudioSource>();
         		gruntAudio.bypassListenerEffects = true;
         		gruntAudio.priority = 20;
-        		gruntAudio.volume = GameSettings.VOICE_VOLUME * gruntsVolume;
+        		gruntAudio.volume = GameSettings.VOICE_VOLUME * gruntsVolume * Configuration.masterVolume;
         		gruntAudio.dopplerLevel = 0;
         		gruntAudio.bypassEffects = true;
         		gruntAudio.loop = false;
@@ -91,7 +91,7 @@ namespace G_Effects
         			
         		breathAudio = audioPlayer.AddComponent<AudioSource>();
         		breathAudio.bypassListenerEffects = true;
-        		breathAudio.volume = GameSettings.VOICE_VOLUME * breathVolume;
+        		breathAudio.volume = GameSettings.VOICE_VOLUME * breathVolume * Configuration.masterVolume;
         		breathAudio.dopplerLevel = 0;
         		breathAudio.bypassEffects = true;
         		breathAudio.loop = false;
@@ -104,7 +104,7 @@ namespace G_Effects
         		heartAudio = audioPlayer.AddComponent<AudioSource>();
         		heartAudio.bypassListenerEffects = true;
         		heartAudio.priority = 10;
-        		heartAudio.volume = GameSettings.VOICE_VOLUME * heartBeatsVolume;
+        		heartAudio.volume = GameSettings.VOICE_VOLUME * heartBeatsVolume * Configuration.masterVolume;
         		heartAudio.dopplerLevel = 0;
         		heartAudio.bypassEffects = true;
         		heartAudio.rolloffMode = AudioRolloffMode.Linear;
@@ -217,7 +217,7 @@ namespace G_Effects
         	if (audioEnabled && (gruntAudio != null) && (Planetarium.GetUniversalTime() - gruntTimer > rnd)) {
         		gruntTimer = Planetarium.GetUniversalTime();
         		int index = (int)((getGruntsCount() - range) * severity) + UnityEngine.Random.Range(0, range);
-        		playAudio(gruntAudio, gruntClips[index], GameSettings.VOICE_VOLUME * gruntsVolume, (female ? femaleVoicePitch : 1.0f));
+        		playAudio(gruntAudio, gruntClips[index], GameSettings.VOICE_VOLUME * gruntsVolume * Configuration.masterVolume, (female ? femaleVoicePitch : 1.0f));
         	}
         }
         
@@ -243,7 +243,7 @@ namespace G_Effects
         }
         public void setHeartBeatsVolume(float volume) {
         	if ((heartAudio != null) && heartBeatsPlaying) {
-        		heartAudio.volume = GameSettings.VOICE_VOLUME * volume;
+        		heartAudio.volume = GameSettings.VOICE_VOLUME * volume * Configuration.masterVolume;
         	}
         }
         
@@ -259,7 +259,7 @@ namespace G_Effects
         //Plays breath sound if it is not playing yet and returns true on success to count successfully played clips
         public bool tryPlayBreath(bool female, float volume, float c) {
         	if ((breathAudio != null) && !breathAudio.isPlaying && ((gruntAudio == null) || (!gruntAudio.isPlaying))) {
-        		playAudio(breathAudio, breathClips[UnityEngine.Random.Range(0, breathClips.Length-1)], volume, breathSoundPitch * c); /*female ? BREATH_PITCH * femaleVoicePitch : BREATH_PITCH*/
+        		playAudio(breathAudio, breathClips[UnityEngine.Random.Range(0, breathClips.Length-1)], volume * Configuration.masterVolume, breathSoundPitch * c); /*female ? BREATH_PITCH * femaleVoicePitch : BREATH_PITCH*/
       	    	return true;
         	}
         	return false;

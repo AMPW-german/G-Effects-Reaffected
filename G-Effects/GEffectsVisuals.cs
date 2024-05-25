@@ -8,9 +8,7 @@ namespace G_Effects
 	/// </summary>
 	public class GEffectsVisuals
 	{
-		
-		Configuration conf;
-		
+				
 		static Texture2D blackoutTexture = null;
 		Texture2D intensifier = new Texture2D(1, 1);
 		Texture2D gLocOverlay = new Texture2D(1, 1);
@@ -25,14 +23,13 @@ namespace G_Effects
 		{
 		}
 		
-		public static GEffectsVisuals initialize(Configuration conf) {
+		public static GEffectsVisuals initialize() {
 			if (blackoutTexture == null) {
 				blackoutTexture = GameDatabase.Instance.GetTexture("G-Effects/blackout", false);
 			}
 			GEffectsVisuals instance = new GEffectsVisuals();
-			instance.conf = conf;
-			instance.flightCameraFilter = GreyoutCameraFilter.initializeCameraFilter(FlightCamera.fetch.mainCamera, conf.mainCamGreyout);
-			instance.internalCameraFilter = GreyoutCameraFilter.initializeCameraFilter(InternalCamera.Instance.GetComponent<Camera>(), conf.IVAGreyout);
+			instance.flightCameraFilter = GreyoutCameraFilter.initializeCameraFilter(FlightCamera.fetch.mainCamera, Configuration.mainCamGreyout);
+			instance.internalCameraFilter = GreyoutCameraFilter.initializeCameraFilter(InternalCamera.Instance.GetComponent<Camera>(), Configuration.IVAGreyout);
 			return instance;
 		}
 		
@@ -54,16 +51,16 @@ namespace G_Effects
 		
 		public void drawGEffects(KerbalGState kerbalGData)
 		{
-			float severity = kerbalGData.getSeverityWithThreshold(2.0f * (float)conf.gResistance);
+			float severity = kerbalGData.getSeverityWithThreshold(2.0f * (float)Configuration.gResistance);
 			if (Math.Abs(severity) > 0.0001) {
 				//Apply positive or negative visual effect
 				if (kerbalGData.cumulativeG > 0) {
 					visualsColor = Color.black;
 					visualsColor.a = (float)(severity * 1.2);
 				} else {
-					visualsColor.r = conf.redoutRGB.r;
-					visualsColor.g = conf.redoutRGB.g;
-					visualsColor.b = conf.redoutRGB.b;
+					visualsColor.r = Configuration.redoutRGB.r;
+					visualsColor.g = Configuration.redoutRGB.g;
+					visualsColor.b = Configuration.redoutRGB.b;
 					visualsColor.a = (float)(severity * 1.2);
 				}
 			

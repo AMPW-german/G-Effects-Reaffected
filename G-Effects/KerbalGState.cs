@@ -21,11 +21,9 @@ namespace G_Effects
 		
 		private int breathNeeded = 0;
 		private double agsmStart = -1;
-	
-		private Configuration configuration;
-		
-		public KerbalGState(Configuration configuration) {
-			this.configuration = configuration;			
+			
+		public KerbalGState() {
+
 		}
 		
 		public void startAGSM(double time) {
@@ -38,8 +36,8 @@ namespace G_Effects
 		public void stopAGSM(double time) {
 			if (isAGSMStarted()) {
 				double deltaTime = getSeverity() * (time - agsmStart);
-				if (deltaTime > configuration.breathThresholdTime) {
-					breathNeeded = (int)Mathf.Clamp((float)(2 + (deltaTime - configuration.breathThresholdTime) / 2), (float)configuration.minBreaths, (float)configuration.maxBreaths);
+				if (deltaTime > Configuration.breathThresholdTime) {
+					breathNeeded = (int)Mathf.Clamp((float)(2 + (deltaTime - Configuration.breathThresholdTime) / 2), (float)Configuration.minBreaths, (float)Configuration.maxBreaths);
 				} else {
 					breathNeeded = 0;
 				}
@@ -64,24 +62,24 @@ namespace G_Effects
 		}
 		
 		public bool isGLocCondition() {
-			return Math.Abs(cumulativeG) > configuration.GLOC_CUMULATIVE_G;			
+			return Math.Abs(cumulativeG) > Configuration.GLOC_CUMULATIVE_G;			
 		}
 		
 		public bool isCriticalCondition() {
-			return configuration.gDeathEnabled && (Math.Abs(cumulativeG) > (configuration.gLocStartCoeff + 0.8 * (configuration.gDeathCoeff - configuration.gLocStartCoeff)) * configuration.MAX_CUMULATIVE_G);
+			return Configuration.gDeathEnabled && (Math.Abs(cumulativeG) > (Configuration.gLocStartCoeff + 0.8 * (Configuration.gDeathCoeff - Configuration.gLocStartCoeff)) * Configuration.MAX_CUMULATIVE_G);
 		}
 		
 		public bool isDeathCondition() {
-			return configuration.gDeathEnabled && (Math.Abs(cumulativeG) > configuration.gDeathCoeff * configuration.MAX_CUMULATIVE_G);
+			return Configuration.gDeathEnabled && (Math.Abs(cumulativeG) > Configuration.gDeathCoeff * Configuration.MAX_CUMULATIVE_G);
 		}
 		
 		public float getSeverity() {
-			return (float)(Math.Abs(cumulativeG) / configuration.MAX_CUMULATIVE_G);
+			return (float)(Math.Abs(cumulativeG) / Configuration.MAX_CUMULATIVE_G);
 		}
 
 		public float getSeverityWithThreshold(float threshold) {
 			float abs = (float)Math.Abs(cumulativeG);
-			return (float)(Mathf.Clamp(abs - threshold, 0, abs) / (configuration.MAX_CUMULATIVE_G - threshold));
+			return (float)(Mathf.Clamp(abs - threshold, 0, abs) / (Configuration.MAX_CUMULATIVE_G - threshold));
 		}
 
 	}
