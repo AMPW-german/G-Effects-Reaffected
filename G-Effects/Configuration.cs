@@ -103,7 +103,7 @@ namespace G_Effects
         		}
         	} else KSPLog.print("" + root + " node not found");
         	
-        	bool.TryParse(nodes[0].GetValue("IVAGreyout"), out IVAGreyout);
+        	bool.TryParse(nodes[0].GetValue("ivaGreyout"), out IVAGreyout);
         	bool.TryParse(nodes[0].GetValue("mainCamGreyout"), out mainCamGreyout);
         	gLocScreenWarning = nodes[0].GetValue("gLocScreenWarning");
         	string redoutColor = nodes[0].GetValue("redoutRGB");
