@@ -41,11 +41,7 @@ namespace G_Effects
 	public class G_Effects : MonoBehaviour
 	{
 
-        //TODO find a way to disable EVA button on G-LOC
         //TODO simulate orientation loss on G-LOC
-		
-		GEffectsAPIImplementation gEffectsApiImpl = GEffectsAPIImplementation.instance();
-		KeepFit.KeepFitAPI keepFitAPI = new KeepFit.KeepFitAPI();
 		
 		const string APP_NAME = "G-Effects";
 		const string CONTROL_LOCK_ID = "G_EFFECTS_LOCK";
@@ -76,10 +72,6 @@ namespace G_Effects
 
 		protected void Start()
 		{	
-			gEffectsApiImpl.setKerbalStates(kerbalGDict);
-			if (keepFitAPI.initialize()) {
-				writeLog("KeepFit mod detected. Working in conjunction.");
-			}
 
 			// Hook into the rendering queue to draw the G effects
 			//RenderingManager.AddToPostDrawQueue(3, new Callback(drawGEffects));
@@ -196,7 +188,6 @@ namespace G_Effects
                                 new DialogGUITextInput(Configuration.gResistance.ToString(), false, 50, (string inputText) => {
 									if (float.TryParse(inputText, out float value))
 									{
-										writeLog(value.ToString());
 										Configuration.gResistance = value;
 										gResistance.SetOptionText($"G-Resistance: {Configuration.gResistance}");
 										return value.ToString();
@@ -209,7 +200,7 @@ namespace G_Effects
                                 new DialogGUIToggle(Configuration.IVAGreyout, "IVA g-effects", (bool newState) => { Configuration.IVAGreyout = newState; }),
                                 new DialogGUIToggle(Configuration.mainCamGreyout, "Maincam g-effects", (bool newState) => { Configuration.mainCamGreyout = newState; }),
                                 volume,
-                                new DialogGUISlider(() => Configuration.masterVolume, 0f, 5f, false, 280f, 10, (newValue) => { Configuration.masterVolume = newValue; writeLog(Configuration.masterVolume.ToString()); volume.SetOptionText($"Volume: {Configuration.masterVolume}");
+                                new DialogGUISlider(() => Configuration.masterVolume, 0f, 5f, false, 280f, 10, (newValue) => { Configuration.masterVolume = newValue; volume.SetOptionText($"Volume: {Configuration.masterVolume}");
                                 }),
 								new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true)
                                 )),
@@ -225,7 +216,6 @@ namespace G_Effects
             }
 
             float offsetY = textPos;
-            float h;
         }
 
 		public void FixedUpdate() {
@@ -305,10 +295,7 @@ namespace G_Effects
 				if (crewMember.gender == ProtoCrewMember.Gender.Female) {
 					kerbalModifier *= Configuration.femaleModifier;
 				}
-				float? keepFitFitnessModifier = keepFitAPI.getFitnessGeeToleranceModifier(crewMember.name);
-				if (keepFitFitnessModifier != null) {
-					kerbalModifier *= (float)keepFitFitnessModifier;
-				}
+
 				//Calculate G forces
 				Vector3d gAcceleration = FlightGlobals.getGeeForceAtPosition(vessel.GetWorldPos3D()) - vessel.acceleration;
 				Vector3d cabinAcceleration = vessel.transform.InverseTransformDirection(gAcceleration); //vessel.transform is an active part's transform

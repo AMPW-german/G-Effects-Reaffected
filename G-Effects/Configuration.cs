@@ -122,8 +122,9 @@ namespace G_Effects
         	int.TryParse(nodes[0].GetValue("breathThresholdTime"), out breathThresholdTime);
         	int.TryParse(nodes[0].GetValue("maxBreaths"), out maxBreaths);
         	int.TryParse(nodes[0].GetValue("minBreaths"), out minBreaths);
-        	float.TryParse(nodes[0].GetValue("gruntsVolume"), out gruntsVolume);
-        	float.TryParse(nodes[0].GetValue("breathVolume"), out breathVolume);
+            float.TryParse(nodes[0].GetValue("masterVolume"), out masterVolume);
+            float.TryParse(nodes[0].GetValue("gruntsVolume"), out gruntsVolume);
+            float.TryParse(nodes[0].GetValue("breathVolume"), out breathVolume);
         	float.TryParse(nodes[0].GetValue("heartBeatVolume"), out heartBeatVolume);
         	float.TryParse(nodes[0].GetValue("femaleVoicePitch"), out femaleVoicePitch);
         	float.TryParse(nodes[0].GetValue("breathSoundPitch"), out breathSoundPitch);
