@@ -1,8 +1,9 @@
 # G-Effects mod for Kerbal Space Program
 
-Supported KSP version: 1.12.x <br/>
-This was only tested on KSP 1.12.5 partially with other mods.<br/>
-It should work with other versions and mods but there is NO guarantee that it will work.
+Supported KSP version: 1.12.5 <br/>
+It is likely that KSP >= 1.8 will work but there is NO guarantee.<br/>
+This mod might be incompatible with other mods that change how Kerbals are affected by g-forces because it replaces the default system with a custom one.<br/>
+It is recommended to enable g force limits on kerbals (via advanced difficulty settings) to see how far kerbals are away from G-LOC, but currently this setting is ignored by this mod.
 
 The work was originally started by russnash37 who gave a permission to Ser (SerTheGreat) to take over and extend [his project](https://forum.kerbalspaceprogram.com/topic/95579-plugin-090-wip-g-force-v004-alpha-experience-the-effects-of-g-forces-on-your-kerbals).<br/>
 Ser has maintained the project until [KSP 1.3](https://forum.kerbalspaceprogram.com/topic/113341-130-122-g-effects-blackouts-redouts-g-locs-v042-2017-jun-25/).<br/>
@@ -24,9 +25,11 @@ G forces have different severity in four directions: upward, downward, backward,
 a kerbal piloting a plane upside down on a circular trajectory.
 Kerbal's specialization also affects how much he can stand.
 
-**IMPORTANT**
-Currently a simple picture is used as an overlay which affects the entire KSP window, including the UI.
-Until I figured out how to use the shader correctly (not my main priority) it'll stay that way.
+**IMPORTANT**<br/>
+Currently a simple picture is used as an overlay which affects the entire KSP window, including the UI (the ui of some mods may be unaffected).<br/>
+Until I figured out how to use the shader correctly (not my main priority) it'll stay that way.<br/>
+I don't know much about g-effects currently but Sers default config feels unrealistic, my personel recommended settings are included.<br/>
+If you know more about this topic feel free to contact me to help me improve this mod.
 
 **Installation:**
 
@@ -37,12 +40,16 @@ Configuration of the mod is done via G-Effects.cfg file. Look through it to have
 I have also added a ingame menu accessible via [modifier key (alt-gr for me on qwertz layout)](https://wiki.kerbalspaceprogram.com/wiki/Key_bindings) + F8<br/>
 This menu allows to enable/disable IVA/maincam visual effects, change the overall sound effect volume from this mod and change the g-resistance.
 
-_The sounds are still a little WIP so you always have an option to disable them via config file or ingame menu if you find'em too annoying._
-
 **Known issues and limitations:**
 - Be careful with various tweaks that may lead to some sudden acceleration rise or collision lags, for example ejection or undocking force tweaks, as they may cause crew to lose consciousness or even die of excessive g forces.
 - G-forces caused by a ship's rotation don't affect because they are not likely to be severe enough to induce any significant effects.
 - Effects are calculated for the active vessel's crew only. You can switch to another vessel and back and have effects applied as if they have just started.
-
+- The G-LOC can be maintained by very little upward g.
+- The overlay can sometimes partially stay and won't fade away.
+- Negative g-effects (redout) can be countered by positive over g and vice versa.
+- 
 **To be implemented:**
-using Shaders instead of pictures
+- using Shaders instead of pictures
+- updated default settings
+- option to disable g force limits on kerbals
+
