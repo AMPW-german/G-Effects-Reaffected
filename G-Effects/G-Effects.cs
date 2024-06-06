@@ -168,8 +168,9 @@ namespace G_Effects
             if (GameSettings.MODIFIER_KEY.GetKey() && UnityEngine.Input.GetKeyDown(KeyCode.F8)
                 && HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-				DialogGUILabel gResistance = new DialogGUILabel($"G-Resistance: {Configuration.gResistance}", 280f);
-				DialogGUILabel volume = new DialogGUILabel($"Volume: {Configuration.masterVolume}", 280f);
+                DialogGUILabel gResistance = new DialogGUILabel($"G-Resistance: {Configuration.gResistance}", 280f);
+                DialogGUILabel deltaGTolerance = new DialogGUILabel($"delta-G-tolerance: {Configuration.deltaGTolerance}", 280f);
+                DialogGUILabel volume = new DialogGUILabel($"Volume: {Configuration.masterVolume}", 280f);
                 if (UI == null)
                 {
                     UI = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
@@ -184,7 +185,8 @@ namespace G_Effects
                             new DialogGUIVerticalLayout(
                                 new DialogGUIFlexibleSpace(),
 								new DialogGUILabel("G-Effects reaffected"),
-								gResistance,
+                                new DialogGUIToggle(Configuration.gLimits, "Kerbal g limits", (bool newState) => { Configuration.gLimits = newState; }),
+                                gResistance,
                                 new DialogGUITextInput(Configuration.gResistance.ToString(), false, 50, (string inputText) => {
 									if (float.TryParse(inputText, out float value))
 									{
@@ -196,6 +198,19 @@ namespace G_Effects
 									{
 										return Configuration.gResistance.ToString();
 									}
+                                }, 25f),
+								deltaGTolerance,
+                                new DialogGUITextInput(Configuration.deltaGTolerance.ToString(), false, 50, (string inputText) => {
+                                    if (float.TryParse(inputText, out float value))
+                                    {
+                                        Configuration.deltaGTolerance = value;
+                                        deltaGTolerance.SetOptionText($"delta-G-tolerance: {Configuration.deltaGTolerance}");
+                                        return value.ToString();
+                                    }
+                                    else
+                                    {
+                                        return Configuration.deltaGTolerance.ToString();
+                                    }
                                 }, 25f),
                                 new DialogGUIToggle(Configuration.IVAGreyout, "IVA g-effects", (bool newState) => { Configuration.IVAGreyout = newState; }),
                                 new DialogGUIToggle(Configuration.mainCamGreyout, "Maincam g-effects", (bool newState) => { Configuration.mainCamGreyout = newState; }),
@@ -222,8 +237,9 @@ namespace G_Effects
 			
 			applyControlLock();
 
-			if (paused) {
-				return;
+            if (paused || !Configuration.gLimits || TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1)
+			{
+                return;
 			}
 			
 			Vessel vessel = FlightGlobals.ActiveVessel;
@@ -474,9 +490,7 @@ namespace G_Effects
 		
 		void OnGUI()
 		{
-            if (paused || 
-				TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1 || 
-				!playEffects)
+            if (paused || TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRate != 1 || !playEffects)
             {
                 return;
             }

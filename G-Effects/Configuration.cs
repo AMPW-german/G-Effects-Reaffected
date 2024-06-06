@@ -24,8 +24,9 @@ namespace G_Effects
     /// </summary>
     static class Configuration
 	{
-		
-		//Configurable parameters:
+
+        //Configurable parameters:
+        public static bool gLimits = true; //Enables g limits for kerbals (uses internal calculations instead of stock)
         public static double gResistance = 300; //Expresses the ability of the blood system to resist G effectsloat 
         public static float downwardGMultiplier = 1.0f; //Multiplier of a G force that pulls a kerbal downwards
         public static float upwardGMultiplier = 2.0f; //Multiplier of a G force that pulls a kerbal upwards
@@ -77,8 +78,9 @@ namespace G_Effects
         	if ((nodes == null) || (nodes.Length == 0)) {
         	    return;
         	}
-        	Double.TryParse(nodes[0].GetValue("gResistance"), out gResistance);
-        	float.TryParse(nodes[0].GetValue("downwardGMultiplier"), out downwardGMultiplier);
+            bool.TryParse(nodes[0].GetValue("gLimits"), out gLimits);
+            Double.TryParse(nodes[0].GetValue("gResistance"), out gResistance);
+            float.TryParse(nodes[0].GetValue("downwardGMultiplier"), out downwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("upwardGMultiplier"), out upwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("fowardGMultiplier"), out forwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("backwardGMultiplier"), out backwardGMultiplier);
