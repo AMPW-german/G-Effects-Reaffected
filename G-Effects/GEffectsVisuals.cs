@@ -29,7 +29,7 @@ namespace G_Effects
 			}
 			GEffectsVisuals instance = new GEffectsVisuals();
 			instance.flightCameraFilter = GreyoutCameraFilter.initializeCameraFilter(FlightCamera.fetch.mainCamera, Configuration.mainCamGreyout);
-			instance.internalCameraFilter = GreyoutCameraFilter.initializeCameraFilter(InternalCamera.Instance.GetComponent<Camera>(), Configuration.IVAGreyout);
+			instance.internalCameraFilter = GreyoutCameraFilter.initializeCameraFilter(FlightCamera.fetch.mainCamera, Configuration.IVAGreyout);
 			return instance;
 		}
 		

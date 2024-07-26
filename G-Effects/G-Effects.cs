@@ -79,6 +79,7 @@ namespace G_Effects
 			GameEvents.onGameUnpause.Add(onUnPause);
 			GameEvents.onCrash.Add(onCrewKilled);
 			GameEvents.onCrashSplashdown.Add(onCrewKilled);
+			GameEvents.OnGameSettingsApplied.Add(ApplySettings);
 			//GameEvents.onCrewKilled.Add(onCrewKilled);
 			GameEvents.onVesselChange.Add(onVesselChange);
 			
@@ -99,9 +100,11 @@ namespace G_Effects
 			GameEvents.onCrashSplashdown.Remove(onCrewKilled);
 			//GameEvents.onCrewKilled.Remove(onCrewKilled);
 			GameEvents.onVesselChange.Remove(onVesselChange);
-		}
-		
-		/*protected void LateUpdate() {
+            GameEvents.OnGameSettingsApplied.Remove(ApplySettings);
+
+        }
+
+        /*protected void LateUpdate() {
 			//PORTRAIT_AGENT.LateUpdate();
 			if (commander != null) {
 				KerbalPortrait portrait = KerbalPortraitGallery.Instance.Portraits.Find(p => p.crewMemberName.Equals(commander.name));
@@ -114,8 +117,8 @@ namespace G_Effects
 				}
 			}
 		}*/
-		
-		private void applyControlLock() {
+
+        private void applyControlLock() {
 			if (InputLockManager.GetControlLock(CONTROL_LOCK_ID) != ControlTypes.None) {
 				FlightGlobals.ActiveVessel.ctrlState.NeutralizeStick();
 			}
@@ -149,8 +152,18 @@ namespace G_Effects
 			InputLockManager.RemoveControlLock(CONTROL_LOCK_ID);
 			visuals.disableCameraFilters();
 		}
-		
-		protected void Awake() {
+
+        void ApplySettings()
+        {
+            Configuration.gLimits = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().GLimits;
+            Configuration.mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().mainCamGreyout;
+            Configuration.IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().IVAGreyout;
+
+			Configuration.saveConfiguration(APP_NAME.ToUpper());
+            return;
+        }
+
+        protected void Awake() {
 			Configuration.loadConfiguration(APP_NAME.ToUpper());
 			
 			if (!gAudio.isInitialized()) {

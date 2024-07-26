@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using UnityEngine.Diagnostics;
+using KSP.IO;
+using System.Reflection;
 
 namespace G_Effects
 {
@@ -45,6 +47,7 @@ namespace G_Effects
         public static Color redoutRGB = Color.red; //Red, green, blue components of a redout color (in case you are certain that green men must have green blood, for example)
 		public static int gLocFadeSpeed = 4; //Speed of fade-out visual effect when a kerbal is losing consciousness
 		
+        //Sound
 		public static int breathThresholdTime = 8; //Time threshold in seconds for a kerbal needed to breathe after AGSM
 		public static int maxBreaths = 6; //Maximum possible breath sounds to be played
 		public static int minBreaths = 2; //Minimum breath sounds to be played
@@ -57,7 +60,7 @@ namespace G_Effects
 		public static float femaleVoicePitch = 1.4f; //How much female kerbals' voice pitch is higher than males' one
 		public static float breathSoundPitch = 1.8f; //Pitch of heavy breath's sounds
 		
-		public static bool enableLogging = false; //Enable this only in debug purposes as it floods the logs very much
+		public static bool enableLogging = true; //Enable this only in debug purposes as it floods the logs very much
 		
 		//Kerbal personal modifiers are used as multipliers for the gResistance parameter and also affect the speed of G effects accumulation  
 		public static float femaleModifier = 1; //How stronger are females than males
@@ -73,18 +76,21 @@ namespace G_Effects
         public static double GLOC_CUMULATIVE_G = 1100;
 
         //functions
+
+        //load the configuration from the G-Effects.cfg file
         public static void loadConfiguration(string root) {
         	ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(root);
-        	if ((nodes == null) || (nodes.Length == 0)) {
+            
+            if ((nodes == null) || (nodes.Length == 0)) {
         	    return;
         	}
             bool.TryParse(nodes[0].GetValue("gLimits"), out gLimits);
-            Double.TryParse(nodes[0].GetValue("gResistance"), out gResistance);
+            double.TryParse(nodes[0].GetValue("gResistance"), out gResistance);
             float.TryParse(nodes[0].GetValue("downwardGMultiplier"), out downwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("upwardGMultiplier"), out upwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("fowardGMultiplier"), out forwardGMultiplier);
         	float.TryParse(nodes[0].GetValue("backwardGMultiplier"), out backwardGMultiplier);
-        	Double.TryParse(nodes[0].GetValue("deltaGTolerance"), out deltaGTolerance);
+        	double.TryParse(nodes[0].GetValue("deltaGTolerance"), out deltaGTolerance);
         	float.TryParse(nodes[0].GetValue("gDampingThreshold"), out gDampingThreshold);
         	float.TryParse(nodes[0].GetValue("gLocStartCoeff"), out gLocStartCoeff);
         	float.TryParse(nodes[0].GetValue("gDeathCoeff"), out gDeathCoeff);
@@ -137,7 +143,80 @@ namespace G_Effects
 			negativeThreshold = 1 - deltaGTolerance;
 			MAX_CUMULATIVE_G = 10 * gResistance;
 			GLOC_CUMULATIVE_G = gLocStartCoeff * MAX_CUMULATIVE_G;
-			
+
+            //applies the configuration to the SettingsGUI
+            HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().GLimits = gLimits;
+            HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().IVAGreyout = IVAGreyout;
+            HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI>().mainCamGreyout = mainCamGreyout;
+
+        }
+
+        //Untested
+        //TODO: save the config to the configuration.cs
+        public static void saveConfiguration(string root)
+        {
+            ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(root);
+            if ((nodes == null) || (nodes.Length == 0))
+            {
+                return;
+            }
+
+            try
+            {
+                nodes[0].SetValue("gLimits", gLimits);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("G-Effects Error");
+                Debug.LogException(e);
+            }
+
+            //Configurable parameters:
+            /*
+            nodes[0].SetValue("gResistance", gResistance);
+            nodes[0].SetValue("downwardGMultiplier", downwardGMultiplier);
+            nodes[0].SetValue("upwardGMultiplier", upwardGMultiplier);
+            nodes[0].SetValue("forwardGMultiplier", forwardGMultiplier);
+            nodes[0].SetValue("backwardGMultiplier", backwardGMultiplier);
+            nodes[0].SetValue("deltaGTolerance", deltaGTolerance);
+            nodes[0].SetValue("gDampingThreshold", gDampingThreshold);
+            nodes[0].SetValue("gLocStartCoeff", gLocStartCoeff);
+            nodes[0].SetValue("gDeathCoeff", gDeathCoeff);
+            nodes[0].SetValue("gDeathEnabled", gDeathEnabled);
+
+            //Greyout
+            nodes[0].SetValue("IVAGreyout", IVAGreyout);
+            nodes[0].SetValue("mainCamGreyout", mainCamGreyout);
+            nodes[0].SetValue("gLocFadeSpeed", gLocFadeSpeed);
+            nodes[0].SetValue("gLocScreenWarning", gLocScreenWarning);
+            nodes[0].SetValue("redoutRGB", redoutRGB);
+
+            //Sound
+            nodes[0].SetValue("masterVolume", masterVolume);
+            nodes[0].SetValue("gruntsVolume", gruntsVolume);
+            nodes[0].SetValue("breathVolume", breathVolume);
+            nodes[0].SetValue("heartBeatVolume", heartBeatVolume);
+            nodes[0].SetValue("femaleVoicePitch", femaleVoicePitch);
+            nodes[0].SetValue("breathSoundPitch", breathSoundPitch);
+            nodes[0].SetValue("breathThresholdTime", breathThresholdTime);
+            nodes[0].SetValue("maxBreaths", maxBreaths);
+            nodes[0].SetValue("minBreaths", minBreaths);
+
+            //Kerbal modifiers
+            nodes[0].SetValue("femaleModifier", femaleModifier);
+
+            nodes[0].GetNode("TRAIT_MODIFIERS").SetValue("Pilot", traitModifiers["Pilot"]);
+            nodes[0].GetNode("TRAIT_MODIFIERS").SetValue("Engineer", traitModifiers["Engineer"]);
+            nodes[0].GetNode("TRAIT_MODIFIERS").SetValue("Scientist", traitModifiers["Scientist"]);
+            nodes[0].GetNode("TRAIT_MODIFIERS").SetValue("Tourist", traitModifiers["Tourist"]);
+
+            nodes[0].SetValue("enableLogging", enableLogging);
+            */
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/../G-Effects.cfg";
+            Debug.Log("G-Effects: " + path);
+
+            ConfigNode node = nodes[0];
+            node.Save(path);
         }
     }
 }
