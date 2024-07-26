@@ -38,18 +38,14 @@ Place contents of the GameData folder of the zip into your KSP/GameData folder
 **Configuration:**
 Configuration of the mod is done via G-Effects.cfg file. Look through it to have an exhaustive description of its parameters.
 I have also added a ingame menu accessible via [modifier key (alt-gr for me on qwertz layout)](https://wiki.kerbalspaceprogram.com/wiki/Key_bindings) + F8<br/>
-This menu allows to enable/disable IVA/maincam visual effects, change the overall sound effect volume from this mod and change the g-resistance.
+This menu allows to enable/disable IVA/maincam visual effects and Kerbal g limits, change the overall sound effect volume from this mod, the g-resistance and the delta g tolerance.<br/>
 
 **Known issues and limitations:**
 - Be careful with various tweaks that may lead to some sudden acceleration rise or collision lags, for example ejection or undocking force tweaks, as they may cause crew to lose consciousness or even die of excessive g forces.
 - G-forces caused by a ship's rotation don't affect because they are not likely to be severe enough to induce any significant effects.
 - Effects are calculated for the active vessel's crew only. You can switch to another vessel and back and have effects applied as if they have just started.
-- The G-LOC can be maintained by very little upward g.
 - The overlay can sometimes partially stay and won't fade away.
 - Negative g-effects (redout) can be countered by positive over g and vice versa.
-- 
+  
 **To be implemented:**
 - using Shaders instead of pictures
-- updated default settings
-- option to disable g force limits on kerbals
-
