@@ -1,16 +1,12 @@
-﻿using System;
-using System.IO;
-using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
+﻿using UnityEngine;
 
 
 namespace G_Effects
 {
-	/// <summary>
-	/// Camera filter that provides picture gray out effect
-	/// </summary>
-	public class GreyoutCameraFilter : MonoBehaviour
+    /// <summary>
+    /// Camera filter that provides picture gray out effect
+    /// </summary>
+    public class GreyoutCameraFilter : MonoBehaviour
 	{
 		
 		private static bool BundleLoaded = false;
