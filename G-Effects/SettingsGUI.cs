@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace G_Effects
 {
-    public class G_Effects_SettingsGUI_gLimits_0 : GameParameters.CustomParameterNode
+    public class G_Effects_gLimits_0 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "cofigurable parameters (1)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -52,7 +52,7 @@ namespace G_Effects
         }
     }
 
-    public class G_Effects_SettingsGUI_gLimits_1 : GameParameters.CustomParameterNode
+    public class G_Effects_gLimits_1 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "cofigurable parameters (2)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -93,7 +93,7 @@ namespace G_Effects
         }
     }
 
-    public class G_Effects_SettingsGUI_Visuals : GameParameters.CustomParameterNode
+    public class G_Effects_Visuals : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Visuals"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -150,7 +150,7 @@ namespace G_Effects
         }
     }
 
-    public class G_Effects_SettingsGUI_Sound_0 : GameParameters.CustomParameterNode
+    public class G_Effects_Sound_0 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Sound (1)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -195,7 +195,7 @@ namespace G_Effects
             return null;
         }
     }
-    public class G_Effects_SettingsGUI_Sound_1 : GameParameters.CustomParameterNode
+    public class G_Effects_Sound_1 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Sound (2)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -229,7 +229,7 @@ namespace G_Effects
         }
     }
 
-    public class SettingsGUI_KerbalModifiers : GameParameters.CustomParameterNode
+    public class G_Effects_KerbalModifiers : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "KerbalModifiers"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }

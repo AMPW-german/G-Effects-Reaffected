@@ -79,7 +79,7 @@ namespace G_Effects
 
         public static void OpenSettings()
         {
-            G_Effects_SettingsGUI_gLimits_0 GLimits_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>();
+            G_Effects_gLimits_0 GLimits_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>();
             GLimits_0.gLimits = gLimits;
             GLimits_0.gResistance = (float)gResistance;
             GLimits_0.downwardGMultiplier = downwardGMultiplier;
@@ -89,20 +89,20 @@ namespace G_Effects
             GLimits_0.deltaGTolerance = (float)deltaGTolerance;
             GLimits_0.gDampingThreshold = gDampingThreshold;
 
-            G_Effects_SettingsGUI_gLimits_1 Glimits_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>();
+            G_Effects_gLimits_1 Glimits_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>();
             Glimits_1.gLocStartCoeff = gLocStartCoeff;
             Glimits_1.gDeathCoeff = gDeathCoeff;
             Glimits_1.gDeathEnabled = gDeathEnabled;
 
-            G_Effects_SettingsGUI_Visuals Visual = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>();
+            G_Effects_Visuals Visual = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>();
             Visual.gLocFadeSpeed = gLocFadeSpeed;
-            Visual.red = (int)redoutRGB.r;
-            Visual.green = (int)redoutRGB.g;
-            Visual.blue = (int)redoutRGB.b;
+            Visual.red = Convert.ToInt32(redoutRGB.r * 255f);
+            Visual.green = Convert.ToInt32(redoutRGB.g * 255f);
+            Visual.blue = Convert.ToInt32(redoutRGB.b * 255f);
 
             Visual.EnableLogging = enableLogging;
 
-            G_Effects_SettingsGUI_Sound_0 Sound_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>();
+            G_Effects_Sound_0 Sound_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>();
             Sound_0.masterVolume = masterVolume;
             Sound_0.gruntsVolume = gruntsVolume;
             Sound_0.breathVolume = breathVolume;
@@ -110,60 +110,66 @@ namespace G_Effects
             Sound_0.femaleVoicePitch = femaleVoicePitch;
             Sound_0.breathSoundPitch = breathSoundPitch;
 
-            G_Effects_SettingsGUI_Sound_1 Sound_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>();
+            G_Effects_Sound_1 Sound_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_1>();
             Sound_1.breathThresholdTime = breathThresholdTime;
             Sound_1.maxBreaths = maxBreaths;
             Sound_1.minBreaths = minBreaths;
+
+            G_Effects_KerbalModifiers KerbalModifier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>();
+            KerbalModifier.femaleModifier = femaleModifier;
+            KerbalModifier.Pilot = traitModifiers["Pilot"];
+            KerbalModifier.Engineer = traitModifiers["Engineer"];
+            KerbalModifier.Scientist = traitModifiers["Scientist"];
         }
 
         public static void ApplySettings(string APP_NAME)
         {
             KSPLog.print("G-EFFECTS: ApplySettings");
-            KSPLog.print("G-EFFECTS: " + HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().EnableLogging);
+            KSPLog.print("G-EFFECTS: " + redoutRGB.r * 255);
 
 
             //configurable parameters
-            gLimits = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gLimits;
-            gResistance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gResistance;
-            downwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().downwardGMultiplier;
-            upwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().upwardGMultiplier;
-            forwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().forwardGMultiplier;
-            backwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().backwardGMultiplier;
-            deltaGTolerance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().deltaGTolerance;
-            gDampingThreshold = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gDampingThreshold;
-            gLocStartCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gLocStartCoeff;
-            gDeathCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gDeathCoeff;
-            gDeathEnabled = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gDeathEnabled;
-            gGainMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gGainMultiplier;
-            gReductionMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gReductionMultiplier;
+            gLimits = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().gLimits;
+            gResistance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().gResistance;
+            downwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().downwardGMultiplier;
+            upwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().upwardGMultiplier;
+            forwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().forwardGMultiplier;
+            backwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().backwardGMultiplier;
+            deltaGTolerance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().deltaGTolerance;
+            gDampingThreshold = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_0>().gDampingThreshold;
+            gLocStartCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>().gLocStartCoeff;
+            gDeathCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>().gDeathCoeff;
+            gDeathEnabled = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>().gDeathEnabled;
+            gGainMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>().gGainMultiplier;
+            gReductionMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_gLimits_1>().gReductionMultiplier;
 
             //visuals
-            mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().mainCamGreyout;
-            IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().IVAGreyout;
-            gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().gLocFadeSpeed;
-            redoutRGB.r = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().red;
-            redoutRGB.g = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().green;
-            redoutRGB.b = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().blue;
+            mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().mainCamGreyout;
+            IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().IVAGreyout;
+            gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().gLocFadeSpeed;
+            redoutRGB.r = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().red / 255;
+            redoutRGB.g = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().green / 255;
+            redoutRGB.b = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().blue / 255;
 
             //sound
-            breathThresholdTime = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().breathThresholdTime;
-            maxBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().maxBreaths;
-            minBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().minBreaths;
-            masterVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().masterVolume;
-            gruntsVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().gruntsVolume;
-            breathVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().breathVolume;
-            heartBeatVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().heartBeatVolume;
-            femaleVoicePitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().femaleVoicePitch;
-            breathSoundPitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().breathSoundPitch;
+            breathThresholdTime = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_1>().breathThresholdTime;
+            maxBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_1>().maxBreaths;
+            minBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_1>().minBreaths;
+            masterVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().masterVolume;
+            gruntsVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().gruntsVolume;
+            breathVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().breathVolume;
+            heartBeatVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().heartBeatVolume;
+            femaleVoicePitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().femaleVoicePitch;
+            breathSoundPitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_0>().breathSoundPitch;
 
             //Kerbal modifiers
-            femaleModifier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().femaleModifier;
-            traitModifiers["Pilot"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Pilot;
-            traitModifiers["Engineer"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Engineer;
-            traitModifiers["Scientist"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Scientist;
-            traitModifiers["Tourist"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Tourist;
+            femaleModifier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>().femaleModifier;
+            traitModifiers["Pilot"] = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>().Pilot;
+            traitModifiers["Engineer"] = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>().Engineer;
+            traitModifiers["Scientist"] = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>().Scientist;
+            traitModifiers["Tourist"] = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_KerbalModifiers>().Tourist;
 
-            enableLogging = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().EnableLogging;
+            enableLogging = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().EnableLogging;
 
             saveConfiguration(APP_NAME.ToUpper());
             return;
@@ -282,7 +288,7 @@ namespace G_Effects
             nodes[0].SetValue("mainCamGreyout", mainCamGreyout, "mainCam is used in 3rd person view. The effect is not disabled by default but it eats up stock reenty and mach visual effects");
             nodes[0].SetValue("gLocFadeSpeed", gLocFadeSpeed, "Speed of fade-out visual effect when a kerbal is losing consciousness");
             nodes[0].SetValue("gLocScreenWarning", gLocScreenWarning, "Text of a warning displayed when a kerbal loses consciousness. Leave empty to disable.");
-            nodes[0].SetValue("redoutRGB", redoutRGB, "Red, green, blue components of redout color (you can change it even to greenout in case you are certain that green men must have green blood)\n\n\t//You can disable specific sound effects by specifying 0 volumes.\n\t//Volumes are specified as a multiplier to KSP voice volume global setting (less than 1 means quieter, greater than 1 means louder)");
+            nodes[0].SetValue("redoutRGB", $"{redoutRGB.r*255},{redoutRGB.g*255},{redoutRGB.b*255}", "Red, green, blue components of redout color (you can change it even to greenout in case you are certain that green men must have green blood)\n\n\t//You can disable specific sound effects by specifying 0 volumes.\n\t//Volumes are specified as a multiplier to KSP voice volume global setting (less than 1 means quieter, greater than 1 means louder)");
 
             //Sound
             nodes[0].SetValue("masterVolume", masterVolume, "Total volume multiplier (affects only the volume of this mod)");
