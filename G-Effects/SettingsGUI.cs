@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace G_Effects
 {
-    public class SettingsGUI_gLimits : GameParameters.CustomParameterNode
+    public class G_Effects_SettingsGUI_gLimits_0 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "cofigurable parameters (1)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -14,28 +14,28 @@ namespace G_Effects
 
         #region gLimits
         [GameParameters.CustomParameterUI("g limits")]
-        public bool gLimits = Configuration.gLimits;
+        public bool gLimits = true;
 
         [GameParameters.CustomFloatParameterUI("gResistance", toolTip = "Expresses the ability of the blood system to resist G effectsloat", minValue = 0, maxValue = 600, addTextField = true, asPercentage = false, displayFormat = "0")]
-        public float gResistance = (float) Configuration.gResistance;
+        public float gResistance = 300;
 
         [GameParameters.CustomFloatParameterUI("downwardGMultiplier", toolTip = "Multiplier of a G force that pulls a kerbal downwards", minValue = 0, maxValue = 2, addTextField = true, asPercentage = false, displayFormat = "0.00")]
-        public float downwardGMultiplier = Configuration.downwardGMultiplier;
+        public float downwardGMultiplier = 1.0f;
 
         [GameParameters.CustomFloatParameterUI("upwardGMultiplier", toolTip = "Multiplier of a G force that pulls a kerbal upwards", minValue = 0, maxValue = 4, addTextField = true, asPercentage = false, displayFormat = "0.00")]
-        public float upwardGMultiplier = Configuration.upwardGMultiplier;
+        public float upwardGMultiplier = 2.0f;
 
         [GameParameters.CustomFloatParameterUI("forwardGMultiplier", toolTip = "Multiplier of a G force that pulls a kerbal forward", minValue = 0, maxValue = 2, addTextField = true, asPercentage = false, displayFormat = "0.00")]
-        public float forwardGMultiplier = Configuration.forwardGMultiplier;
+        public float forwardGMultiplier = 0.5f;
 
         [GameParameters.CustomFloatParameterUI("backwardGMultiplier", toolTip = "Multiplier of a G force that pulls a kerbal backward", minValue = 0, maxValue = 2, addTextField = true, asPercentage = false, displayFormat = "0.00")]
-        public float backwardGMultiplier = Configuration.backwardGMultiplier;
+        public float backwardGMultiplier = 0.75f;
 
-        [GameParameters.CustomFloatParameterUI("deltaG Tolerance", toolTip = "The G effects start if the G value is below 1 - tolerance or above 1 + tolerance", minValue = 0, maxValue = 6, addTextField = true, asPercentage = false, displayFormat = "0")]
-        public float deltaGTolerance = (float) Configuration.deltaGTolerance;
+        [GameParameters.CustomFloatParameterUI("deltaG Tolerance", toolTip = "The G effects start if the G value is below 1 - tolerance or above 1 + tolerance", minValue = 0, maxValue = 6, addTextField = true, asPercentage = false, displayFormat = "0.0")]
+        public float deltaGTolerance = 3.0f;
 
         [GameParameters.CustomFloatParameterUI("gDampingThreshold", toolTip = "Threshold for damping unnatural acceleration peaks caused by imperfect physics (in G per frame)", minValue = 0, maxValue = 200, addTextField = true, asPercentage = false, displayFormat = "0")]
-        public float gDampingThreshold = Configuration.gDampingThreshold;
+        public float gDampingThreshold = 100;
         #endregion
 
         public override bool Enabled(MemberInfo member, GameParameters parameters)
@@ -52,7 +52,7 @@ namespace G_Effects
         }
     }
 
-    public class SettingsGUI_gLimits_2 : GameParameters.CustomParameterNode
+    public class G_Effects_SettingsGUI_gLimits_1 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "cofigurable parameters (2)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -70,6 +70,12 @@ namespace G_Effects
 
         [GameParameters.CustomParameterUI("gDeath Enabled")]
         public bool gDeathEnabled = Configuration.gDeathEnabled;
+
+        [GameParameters.CustomFloatParameterUI("gGainMultiplier", toolTip = "Multiplies the cumulative G gain per frame to compensate for too much gain", minValue = 1, maxValue = 16, addTextField = true, asPercentage = false, displayFormat = "0.00")]
+        public float gGainMultiplier = Configuration.gGainMultiplier;
+
+        [GameParameters.CustomFloatParameterUI("gReductionMultiplier", toolTip = "Multiplies the reduction of cumulative g per frame to correct for too fast reduction", minValue = 0, maxValue = 2, addTextField = true, asPercentage = false, displayFormat = "0.00")]
+        public float gReductionMultiplier = Configuration.gReductionMultiplier;
         #endregion
 
 
@@ -87,7 +93,7 @@ namespace G_Effects
         }
     }
 
-    public class SettingsGUI_Visuals : GameParameters.CustomParameterNode
+    public class G_Effects_SettingsGUI_Visuals : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Visuals"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -108,10 +114,6 @@ namespace G_Effects
         [GameParameters.CustomParameterUI("IVA effects")]
         public bool IVAGreyout = Configuration.IVAGreyout;
 
-        /*public string gLocWarning = "Text of a warning displayed when a kerbal loses consience. This can only be changed in the G-Effects.cfg" + Configuration.gLocScreenWarning;
-        [GameParameters.CustomStringParameterUI("gLocScreenWarning", title = , toolTip = "test string tooltip")]*/
-        //public string UIstring = "";
-
         [GameParameters.CustomFloatParameterUI("gLoc Fadespeed", toolTip = "Speed of fade-out visual effect when a kerbal is losing consciousness", minValue = 0f, maxValue = 10f, addTextField = true, asPercentage = false)]
         public float gLocFadeSpeed = Configuration.gLocFadeSpeed;
 
@@ -129,7 +131,7 @@ namespace G_Effects
         #endregion
 
         [GameParameters.CustomParameterUI("enableLogging")]
-        public bool enableLogging = Configuration.enableLogging;
+        public bool EnableLogging = true;
 
         [GameParameters.CustomStringParameterUI("All parameters can be set to a higher/lower maximum number via the textfield.", lines = 4)]
         public string InfoText = string.Empty;
@@ -148,7 +150,7 @@ namespace G_Effects
         }
     }
 
-    public class SettingsGUI_Sound : GameParameters.CustomParameterNode
+    public class G_Effects_SettingsGUI_Sound_0 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Sound (1)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
@@ -193,7 +195,7 @@ namespace G_Effects
             return null;
         }
     }
-    public class SettingsGUI_Sound_2 : GameParameters.CustomParameterNode
+    public class G_Effects_SettingsGUI_Sound_1 : GameParameters.CustomParameterNode
     {
         public override string Title { get { return "Sound (2)"; } } // column heading
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }

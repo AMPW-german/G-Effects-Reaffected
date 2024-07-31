@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommNet.Network;
+using LibNoise;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -21,7 +23,7 @@ namespace G_Effects
     /// Reads and holds configuration parameters
     /// </summary>
     static class Configuration
-	{
+    {
 
         //Configurable parameters:
         public static bool gLimits = true; //Enables g limits for kerbals (uses internal calculations instead of stock)
@@ -31,81 +33,128 @@ namespace G_Effects
         public static float forwardGMultiplier = 0.5f; //Multiplier of a G force that pulls a kerbal forward
         public static float backwardGMultiplier = 0.75f; //Multiplier of a G force that pulls a kerbal backward
         public static double deltaGTolerance = 3; //The G effects start if the G value is below 1 - tolerance or above 1 + tolerance
+        public static float gGainMultiplier = 11.0f; //Multiplies the cumulative G gain per frame to compensate for too much gain.
+        public static float gReductionMultiplier = 0.9f; //Multiplies the reduction of cumulative g per frame to correct for too fast reduction
         public static float gDampingThreshold = 100; //Threshold for damping unnatural acceleration peaks caused by imperfect physics (in G per frame)
         public static float gLocStartCoeff = 1.1f; //How much more should our poor kerbal suffer after complete loss of vision to have a G-LOC
         public static float gDeathCoeff = 20.0f; //How much more should a kerbal suffer to die of a sustained over-g
         public static bool gDeathEnabled = false; //Will the critical conditions and g-deaths take place or not
-        
+
         //Greyout is a post-processing effect. It may conflict with other post-processing effects like b/w cameras etc, so disable greyouts if necessary.
         public static bool IVAGreyout = true; //Greyout effect in IVA view
         public static bool mainCamGreyout = true; //mainCam is used in 3rd person view. The effect is disabled by default because it eats up stock reenty and mach visual effects
         public static String gLocScreenWarning = null; //Text of a warning displayed when a kerbal loses consience. Leave empty to disable.
         public static Color redoutRGB = Color.red; //Red, green, blue components of a redout color (in case you are certain that green men must have green blood, for example)
-		public static float gLocFadeSpeed = 4f; //Speed of fade-out visual effect when a kerbal is losing consciousness
-		
+        public static float gLocFadeSpeed = 4f; //Speed of fade-out visual effect when a kerbal is losing consciousness
+
         //Sound
-		public static float breathThresholdTime = 8; //Time threshold in seconds for a kerbal needed to breathe after AGSM
-		public static int maxBreaths = 6; //Maximum possible breath sounds to be played
-		public static int minBreaths = 2; //Minimum breath sounds to be played
-		//You can disable specific sound effects by specifying 0 volumes.
-		//Volumes are specified as a fraction of KSP voice volume global setting (less than 1 means quiter, greater than 1 means louder)
+        public static float breathThresholdTime = 8; //Time threshold in seconds for a kerbal needed to breathe after AGSM
+        public static int maxBreaths = 6; //Maximum possible breath sounds to be played
+        public static int minBreaths = 2; //Minimum breath sounds to be played
+                                          //You can disable specific sound effects by specifying 0 volumes.
+                                          //Volumes are specified as a fraction of KSP voice volume global setting (less than 1 means quiter, greater than 1 means louder)
         public static float masterVolume = 1.0f; //Used to make all soundeffects equally loader or quiter
-		public static float gruntsVolume = 2.0f; //Volume of grunts when a kerbal tries to push blood back in his head on positive and frontal over-G
-		public static float breathVolume = 2.0f; //Volume of heavy breath when a kerbal rests after over-G
-		public static float heartBeatVolume = 2.0f; //Volume of blood beating in kerbal's ears on negative over-G
-		public static float femaleVoicePitch = 1.4f; //How much female kerbals' voice pitch is higher than males' one
-		public static float breathSoundPitch = 1.8f; //Pitch of heavy breath's sounds
-		
-		public static bool enableLogging = true; //Enable this only in debug purposes as it floods the logs very much
-		
-		//Kerbal personal modifiers are used as multipliers for the gResistance parameter and also affect the speed of G effects accumulation  
-		public static float femaleModifier = 1; //How much stronger are females than males
-		//Modifiers by specialization traits:
-		public static Dictionary<string, float> traitModifiers = new Dictionary<string, float>() {
-			{"Pilot", 1.3f}, {"Engineer", 1.0f}, {"Scientist", 1.0f}, {"Tourist", 0.6f}
-		};
-		
-		//Calculated parameters:
-		public static double positiveThreshold = 4;
+        public static float gruntsVolume = 2.0f; //Volume of grunts when a kerbal tries to push blood back in his head on positive and frontal over-G
+        public static float breathVolume = 2.0f; //Volume of heavy breath when a kerbal rests after over-G
+        public static float heartBeatVolume = 2.0f; //Volume of blood beating in kerbal's ears on negative over-G
+        public static float femaleVoicePitch = 1.4f; //How much female kerbals' voice pitch is higher than males' one
+        public static float breathSoundPitch = 1.8f; //Pitch of heavy breath's sounds
+
+        public static bool enableLogging = true; //Enable this only in debug purposes as it floods the logs very much
+
+        //Kerbal personal modifiers are used as multipliers for the gResistance parameter and also affect the speed of G effects accumulation  
+        public static float femaleModifier = 1; //How much stronger are females than males
+                                                //Modifiers by specialization traits:
+        public static Dictionary<string, float> traitModifiers = new Dictionary<string, float>() {
+            {"Pilot", 1.3f}, {"Engineer", 1.0f}, {"Scientist", 1.0f}, {"Tourist", 0.6f}
+        };
+
+        //Calculated parameters:
+        public static double positiveThreshold = 4;
         public static double negativeThreshold = -2;
         public static double MAX_CUMULATIVE_G = 1000;
         public static double GLOC_CUMULATIVE_G = 1100;
 
         //functions
 
+        public static void OpenSettings()
+        {
+            G_Effects_SettingsGUI_gLimits_0 GLimits_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>();
+            GLimits_0.gLimits = gLimits;
+            GLimits_0.gResistance = (float)gResistance;
+            GLimits_0.downwardGMultiplier = downwardGMultiplier;
+            GLimits_0.upwardGMultiplier = upwardGMultiplier;
+            GLimits_0.forwardGMultiplier = forwardGMultiplier;
+            GLimits_0.backwardGMultiplier = backwardGMultiplier;
+            GLimits_0.deltaGTolerance = (float)deltaGTolerance;
+            GLimits_0.gDampingThreshold = gDampingThreshold;
+
+            G_Effects_SettingsGUI_gLimits_1 Glimits_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>();
+            Glimits_1.gLocStartCoeff = gLocStartCoeff;
+            Glimits_1.gDeathCoeff = gDeathCoeff;
+            Glimits_1.gDeathEnabled = gDeathEnabled;
+
+            G_Effects_SettingsGUI_Visuals Visual = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>();
+            Visual.gLocFadeSpeed = gLocFadeSpeed;
+            Visual.red = (int)redoutRGB.r;
+            Visual.green = (int)redoutRGB.g;
+            Visual.blue = (int)redoutRGB.b;
+
+            Visual.EnableLogging = enableLogging;
+
+            G_Effects_SettingsGUI_Sound_0 Sound_0 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>();
+            Sound_0.masterVolume = masterVolume;
+            Sound_0.gruntsVolume = gruntsVolume;
+            Sound_0.breathVolume = breathVolume;
+            Sound_0.heartBeatVolume = heartBeatVolume;
+            Sound_0.femaleVoicePitch = femaleVoicePitch;
+            Sound_0.breathSoundPitch = breathSoundPitch;
+
+            G_Effects_SettingsGUI_Sound_1 Sound_1 = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>();
+            Sound_1.breathThresholdTime = breathThresholdTime;
+            Sound_1.maxBreaths = maxBreaths;
+            Sound_1.minBreaths = minBreaths;
+        }
+
         public static void ApplySettings(string APP_NAME)
         {
+            KSPLog.print("G-EFFECTS: ApplySettings");
+            KSPLog.print("G-EFFECTS: " + HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().EnableLogging);
+
+
             //configurable parameters
-            gLimits = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().gLimits;
-            gResistance = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().gResistance;
-            downwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().downwardGMultiplier;
-            upwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().upwardGMultiplier;
-            forwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().forwardGMultiplier;
-            backwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().backwardGMultiplier;
-            deltaGTolerance = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().deltaGTolerance;
-            gDampingThreshold = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits>().gDampingThreshold;
-            gLocStartCoeff = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits_2>().gLocStartCoeff;
-            gDeathCoeff = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits_2>().gDeathCoeff;
-            gDeathEnabled = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_gLimits_2>().gDeathEnabled;
+            gLimits = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gLimits;
+            gResistance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gResistance;
+            downwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().downwardGMultiplier;
+            upwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().upwardGMultiplier;
+            forwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().forwardGMultiplier;
+            backwardGMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().backwardGMultiplier;
+            deltaGTolerance = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().deltaGTolerance;
+            gDampingThreshold = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_0>().gDampingThreshold;
+            gLocStartCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gLocStartCoeff;
+            gDeathCoeff = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gDeathCoeff;
+            gDeathEnabled = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gDeathEnabled;
+            gGainMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gGainMultiplier;
+            gReductionMultiplier = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_gLimits_1>().gReductionMultiplier;
 
             //visuals
-            mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().mainCamGreyout;
-            IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().IVAGreyout;
-            gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().gLocFadeSpeed;
-            redoutRGB.r = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().red;
-            redoutRGB.g = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().green;
-            redoutRGB.b = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().blue;
+            mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().mainCamGreyout;
+            IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().IVAGreyout;
+            gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().gLocFadeSpeed;
+            redoutRGB.r = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().red;
+            redoutRGB.g = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().green;
+            redoutRGB.b = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().blue;
 
             //sound
-            breathThresholdTime = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound_2>().breathThresholdTime;
-            maxBreaths = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound_2>().maxBreaths;
-            minBreaths = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound_2>().minBreaths;
-            masterVolume = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().masterVolume;
-            gruntsVolume = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().gruntsVolume;
-            breathVolume = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().breathVolume;
-            heartBeatVolume = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().heartBeatVolume;
-            femaleVoicePitch = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().femaleVoicePitch;
-            breathSoundPitch = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Sound>().breathSoundPitch;
+            breathThresholdTime = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().breathThresholdTime;
+            maxBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().maxBreaths;
+            minBreaths = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_1>().minBreaths;
+            masterVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().masterVolume;
+            gruntsVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().gruntsVolume;
+            breathVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().breathVolume;
+            heartBeatVolume = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().heartBeatVolume;
+            femaleVoicePitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().femaleVoicePitch;
+            breathSoundPitch = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Sound_0>().breathSoundPitch;
 
             //Kerbal modifiers
             femaleModifier = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().femaleModifier;
@@ -114,78 +163,91 @@ namespace G_Effects
             traitModifiers["Scientist"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Scientist;
             traitModifiers["Tourist"] = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_KerbalModifiers>().Tourist;
 
-            enableLogging = HighLogic.CurrentGame.Parameters.CustomParams<SettingsGUI_Visuals>().enableLogging;
+            enableLogging = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_SettingsGUI_Visuals>().EnableLogging;
 
             saveConfiguration(APP_NAME.ToUpper());
             return;
         }
 
         //load the configuration from the G-Effects.cfg file
-        public static void loadConfiguration(string root) {
-        	ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(root);
-            
-            if ((nodes == null) || (nodes.Length == 0)) {
-        	    return;
-        	}
+        public static void loadConfiguration(string root)
+        {
+            ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes(root);
+
+            if ((nodes == null) || (nodes.Length == 0))
+            {
+                return;
+            }
             bool.TryParse(nodes[0].GetValue("gLimits"), out gLimits);
             double.TryParse(nodes[0].GetValue("gResistance"), out gResistance);
             float.TryParse(nodes[0].GetValue("downwardGMultiplier"), out downwardGMultiplier);
-        	float.TryParse(nodes[0].GetValue("upwardGMultiplier"), out upwardGMultiplier);
-        	float.TryParse(nodes[0].GetValue("fowardGMultiplier"), out forwardGMultiplier);
-        	float.TryParse(nodes[0].GetValue("backwardGMultiplier"), out backwardGMultiplier);
-        	double.TryParse(nodes[0].GetValue("deltaGTolerance"), out deltaGTolerance);
-        	float.TryParse(nodes[0].GetValue("gDampingThreshold"), out gDampingThreshold);
-        	float.TryParse(nodes[0].GetValue("gLocStartCoeff"), out gLocStartCoeff);
-        	float.TryParse(nodes[0].GetValue("gDeathCoeff"), out gDeathCoeff);
-        	bool.TryParse(nodes[0].GetValue("gDeathEnabled"), out gDeathEnabled);
-        	        	
-        	float.TryParse(nodes[0].GetValue("femaleModifier"), out femaleModifier);
-        	ConfigNode traitNode = nodes[0].GetNode("TRAIT_MODIFIERS");
-        	if (traitNode != null) {
-        		foreach (string valueName in traitNode.values.DistinctNames()) {
-        			float value;
-        			if (float.TryParse(traitNode.GetValue(valueName), out value)) {
-        				if (traitModifiers.ContainsKey(valueName)) {
-        					traitModifiers[valueName] = value;
-        				} else {
-        					traitModifiers.Add(valueName, value);
-        				}
-    				}
-        		}
-        	} else KSPLog.print("" + root + " node not found");
-        	
-        	bool.TryParse(nodes[0].GetValue("ivaGreyout"), out IVAGreyout);
-        	bool.TryParse(nodes[0].GetValue("mainCamGreyout"), out mainCamGreyout);
-        	gLocScreenWarning = nodes[0].GetValue("gLocScreenWarning");
-        	string redoutColor = nodes[0].GetValue("redoutRGB");
-        	string[] redoutComponents;
-        	if ((redoutColor != null)  && ((redoutComponents = redoutColor.Split(',')).Length == 3) ) {
-        		float r, g, b;
-        		if (float.TryParse(redoutComponents[0].Trim(' '), out r) &&
-        		    float.TryParse(redoutComponents[1].Trim(' '), out g) &&
-        		    float.TryParse(redoutComponents[2].Trim(' '), out b) ) {
-        			redoutRGB.r = r / 255;
-        			redoutRGB.g = g / 255;
-        			redoutRGB.b = b / 255;
-        		}
-        	}
-        	float.TryParse(nodes[0].GetValue("gLocFadeSpeed"), out gLocFadeSpeed);
-        	float.TryParse(nodes[0].GetValue("breathThresholdTime"), out breathThresholdTime);
-        	int.TryParse(nodes[0].GetValue("maxBreaths"), out maxBreaths);
-        	int.TryParse(nodes[0].GetValue("minBreaths"), out minBreaths);
+            float.TryParse(nodes[0].GetValue("upwardGMultiplier"), out upwardGMultiplier);
+            float.TryParse(nodes[0].GetValue("fowardGMultiplier"), out forwardGMultiplier);
+            float.TryParse(nodes[0].GetValue("backwardGMultiplier"), out backwardGMultiplier);
+            double.TryParse(nodes[0].GetValue("deltaGTolerance"), out deltaGTolerance);
+            float.TryParse(nodes[0].GetValue("gGainMultiplier"), out gGainMultiplier);
+            float.TryParse(nodes[0].GetValue("gReductionMultiplier"), out gReductionMultiplier);
+            float.TryParse(nodes[0].GetValue("gDampingThreshold"), out gDampingThreshold);
+            float.TryParse(nodes[0].GetValue("gLocStartCoeff"), out gLocStartCoeff);
+            float.TryParse(nodes[0].GetValue("gDeathCoeff"), out gDeathCoeff);
+            bool.TryParse(nodes[0].GetValue("gDeathEnabled"), out gDeathEnabled);
+
+            float.TryParse(nodes[0].GetValue("femaleModifier"), out femaleModifier);
+            ConfigNode traitNode = nodes[0].GetNode("TRAIT_MODIFIERS");
+            if (traitNode != null)
+            {
+                foreach (string valueName in traitNode.values.DistinctNames())
+                {
+                    float value;
+                    if (float.TryParse(traitNode.GetValue(valueName), out value))
+                    {
+                        if (traitModifiers.ContainsKey(valueName))
+                        {
+                            traitModifiers[valueName] = value;
+                        }
+                        else
+                        {
+                            traitModifiers.Add(valueName, value);
+                        }
+                    }
+                }
+            }
+            else KSPLog.print("" + root + " node not found");
+
+            bool.TryParse(nodes[0].GetValue("ivaGreyout"), out IVAGreyout);
+            bool.TryParse(nodes[0].GetValue("mainCamGreyout"), out mainCamGreyout);
+            gLocScreenWarning = nodes[0].GetValue("gLocScreenWarning");
+            string redoutColor = nodes[0].GetValue("redoutRGB");
+            string[] redoutComponents;
+            if ((redoutColor != null) && ((redoutComponents = redoutColor.Split(',')).Length == 3))
+            {
+                float r, g, b;
+                if (float.TryParse(redoutComponents[0].Trim(' '), out r) &&
+                    float.TryParse(redoutComponents[1].Trim(' '), out g) &&
+                    float.TryParse(redoutComponents[2].Trim(' '), out b))
+                {
+                    redoutRGB.r = r / 255;
+                    redoutRGB.g = g / 255;
+                    redoutRGB.b = b / 255;
+                }
+            }
+            float.TryParse(nodes[0].GetValue("gLocFadeSpeed"), out gLocFadeSpeed);
+            float.TryParse(nodes[0].GetValue("breathThresholdTime"), out breathThresholdTime);
+            int.TryParse(nodes[0].GetValue("maxBreaths"), out maxBreaths);
+            int.TryParse(nodes[0].GetValue("minBreaths"), out minBreaths);
             float.TryParse(nodes[0].GetValue("masterVolume"), out masterVolume);
             float.TryParse(nodes[0].GetValue("gruntsVolume"), out gruntsVolume);
             float.TryParse(nodes[0].GetValue("breathVolume"), out breathVolume);
-        	float.TryParse(nodes[0].GetValue("heartBeatVolume"), out heartBeatVolume);
-        	float.TryParse(nodes[0].GetValue("femaleVoicePitch"), out femaleVoicePitch);
-        	float.TryParse(nodes[0].GetValue("breathSoundPitch"), out breathSoundPitch);
-        	
-        	bool.TryParse(nodes[0].GetValue("enableLogging"), out enableLogging);
-        	
-        	positiveThreshold = 1 + deltaGTolerance;
-			negativeThreshold = 1 - deltaGTolerance;
-			MAX_CUMULATIVE_G = 10 * gResistance;
-			GLOC_CUMULATIVE_G = gLocStartCoeff * MAX_CUMULATIVE_G;
+            float.TryParse(nodes[0].GetValue("heartBeatVolume"), out heartBeatVolume);
+            float.TryParse(nodes[0].GetValue("femaleVoicePitch"), out femaleVoicePitch);
+            float.TryParse(nodes[0].GetValue("breathSoundPitch"), out breathSoundPitch);
+
+            bool.TryParse(nodes[0].GetValue("enableLogging"), out enableLogging);
+
+            positiveThreshold = 1 + deltaGTolerance;
+            negativeThreshold = 1 - deltaGTolerance;
+            MAX_CUMULATIVE_G = 10 * gResistance;
+            GLOC_CUMULATIVE_G = gLocStartCoeff * MAX_CUMULATIVE_G;
         }
 
         //saves the config to the configuration.cs
@@ -208,6 +270,8 @@ namespace G_Effects
             nodes[0].SetValue("forwardGMultiplier", forwardGMultiplier, "Multiplier of a G force that pulls a kerbal forward");
             nodes[0].SetValue("backwardGMultiplier", backwardGMultiplier, "Multiplier of a G force that pulls a kerbal backward");
             nodes[0].SetValue("deltaGTolerance", deltaGTolerance, "The G effects start if the G value is below 1 - tolerance or above 1 + tolerance");
+            nodes[0].SetValue("gGainMultiplier", gGainMultiplier, "Multiplies the cumulative G gain per frame to compensate for too much gain");
+            nodes[0].SetValue("gReductionMultiplier", gReductionMultiplier, "Multiplies the reduction of cumulative g per frame to correct for too fast reduction");
             nodes[0].SetValue("gDampingThreshold", gDampingThreshold, "Threshold for damping unnatural acceleration peaks caused by imperfect physics (in G per frame)");
             nodes[0].SetValue("gLocStartCoeff", gLocStartCoeff, "How much more our poor kerbal should suffer after complete loss of vision to have a G-LOC");
             nodes[0].SetValue("gDeathCoeff", gDeathCoeff, "How much more should a kerbal suffer to die of a sustained over-g");
@@ -240,8 +304,16 @@ namespace G_Effects
             nodes[0].GetNode("TRAIT_MODIFIERS").SetValue("Tourist", traitModifiers["Tourist"]);
 
             nodes[0].SetValue("enableLogging", enableLogging, "Enable this only in debug purposes as it floods the logs very much");
-            
+
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/../G-Effects.cfg";
+
+            if (enableLogging)
+            {
+                KSPLog.print("G-EFFECTS: " + path);
+            }
+
+            KSPLog.print("G-EFFECTS: " + path);
+
 
             ConfigNode node = new ConfigNode();
             nodes[0].name = "G-EFFECTS";

@@ -70,3 +70,6 @@
 /G-Effects/bin/Release/UnityEngine.WindModule.dll
 /G-Effects/bin/Release/UnityEngine.XRModule.dll
 /G-Effects/bin/Debug/G-Effects.pdb
+/G-Effects/Configuration.txt
+/G-Effects/G-Effects.cs.txt
+/G-Effects/SettingsGUI.txt

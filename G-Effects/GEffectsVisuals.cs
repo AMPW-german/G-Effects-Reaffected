@@ -52,7 +52,8 @@ namespace G_Effects
 		public void drawGEffects(KerbalGState kerbalGData)
 		{
 			float severity = kerbalGData.getSeverityWithThreshold(2.0f * (float)Configuration.gResistance);
-			if (Math.Abs(severity) > 0.0001) {
+			
+            if (Math.Abs(severity) > 0.0001) {
 				//Apply positive or negative visual effect
 				if (kerbalGData.cumulativeG > 0) {
 					visualsColor = Color.black;

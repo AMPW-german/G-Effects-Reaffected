@@ -24,19 +24,28 @@ namespace G_Effects
     /// </summary>
 
     //this class is used to register the settings gui to the events so it's always working
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    [KSPAddon(KSPAddon.Startup.AllGameScenes, true)]
     public class G_Effects_Always : MonoBehaviour
     {
         const string APP_NAME = "G-Effects";
         protected void Start()
         {
             GameEvents.OnGameSettingsApplied.Add(ApplySettings);
+            GameEvents.onGamePause.Add(OpenSettings);
         }
 
-        protected void OnDestroy()
+
+
+        /*protected void OnDestroy()
         {
             GameEvents.OnGameSettingsApplied.Remove(ApplySettings);
+            GameEvents.onGamePause.Remove(OpenSettings);
+        }*/
 
+        void OpenSettings()
+        {
+            KSPLog.print("G-EFFECTS: Pause");
+            Configuration.OpenSettings();
         }
 
         void ApplySettings()
@@ -173,7 +182,7 @@ namespace G_Effects
             visuals = GEffectsVisuals.initialize();
 
             GameParameters.AdvancedParams pars = HighLogic.CurrentGame.Parameters.CustomParams<GameParameters.AdvancedParams>();
-            pars.GKerbalLimits = Configuration.gLimits;
+            pars.GKerbalLimits = true;
         }
 
         public void FixedUpdate()
@@ -280,7 +289,7 @@ namespace G_Effects
                 forwardG = gState.forwardG * (gState.forwardG > 0 ? Configuration.forwardGMultiplier : Configuration.backwardGMultiplier);
 
                 float deltaTime = TimeWarp.fixedDeltaTime;
-                gState.cumulativeG -= Math.Sign(gState.cumulativeG) * Configuration.gResistance * kerbalModifier * deltaTime;
+                gState.cumulativeG -= Math.Sign(gState.cumulativeG) * Configuration.gResistance * kerbalModifier * deltaTime * Configuration.gReductionMultiplier;
                 //gAudio.applyFilter(1 - Mathf.Clamp01((float)(1.25 * Math.Pow(Math.Abs(gData.cumulativeG) / conf.MAX_CUMULATIVE_G, 2) - 0.2)));
                 if (crewMember.Equals(commander))
                 {
@@ -291,7 +300,7 @@ namespace G_Effects
 
                     double rebCompensation = Configuration.gResistance * kerbalModifier - Configuration.deltaGTolerance * Configuration.deltaGTolerance / kerbalModifier; //this is calculated so the rebound is in equilibrium with cumulativeG at the very point of G threshold
                     gState.cumulativeG +=
-                        (Math.Sign(downwardG - 1 + forwardG) * rebCompensation + (Math.Abs(downwardG - 1) * (downwardG - 1) + Math.Abs(forwardG) * forwardG) / kerbalModifier) * deltaTime;
+                        ((Math.Sign(downwardG - 1 + forwardG) * rebCompensation + (Math.Abs(downwardG - 1) * (downwardG - 1) + Math.Abs(forwardG) * forwardG) * Configuration.gGainMultiplier) / kerbalModifier) * deltaTime;
                     gAudio.stopBreath();
                     gState.resetBreath();
 
