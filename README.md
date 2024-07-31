@@ -10,7 +10,10 @@ Ser has maintained the project until [KSP 1.3](https://forum.kerbalspaceprogram.
 Since Ser and russnash37 weren't active on github or the KSP forum for a long time I wasn't able to contact them.
 
 Ser tried to make focus on realism as much as he was able to research the subject so the default settings assume that all kerbals including tourists are trained astronauts wearing G-suits.
-Pilots are more trained than others, of course.
+Pilots are more trained than others, of course.<br><br>
+
+**Available on [Spacedock](https://spacedock.info/mod/3612/G-EFFECTS-REAFFECTED#info) and &nbsp;&nbsp;![CKAN Indexed](https://img.shields.io/badge/CKAN-Indexed-green.svg)**<br><br>
+
 
 **The following G-effects are simulated:**
 * Blackouts/redouts
@@ -25,20 +28,13 @@ G forces have different severity in four directions: upward, downward, backward,
 a kerbal piloting a plane upside down on a circular trajectory.
 Kerbal's specialization also affects how much he can stand.
 
-**IMPORTANT**<br/>
-Currently a simple picture is used as an overlay which affects the entire KSP window, including the UI (the ui of some mods may be unaffected).<br/>
-Until I figured out how to use the shader correctly (not my main priority) it'll stay that way.<br/>
-I don't know much about g-effects currently but Sers default config feels unrealistic, my personel recommended settings are included.<br/>
-If you know more about this topic feel free to contact me to help me improve this mod.
-
 **Installation:**
 
 Place contents of the GameData folder of the zip into your KSP/GameData folder
 
 **Configuration:**
 Configuration of the mod is done via G-Effects.cfg file. Look through it to have an exhaustive description of its parameters.
-I have also added a ingame menu accessible via [modifier key (alt-gr for me on qwertz layout)](https://wiki.kerbalspaceprogram.com/wiki/Key_bindings) + F8<br/>
-This menu allows to enable/disable IVA/maincam visual effects and Kerbal g limits, change the overall sound effect volume from this mod, the g-resistance and the delta g tolerance.<br/>
+I have also added a ingame menu in the settings, named G-Effects (1) and (2), it's rather large but it contains most of the settings<br/>
 
 **Known issues and limitations:**
 - Be careful with various tweaks that may lead to some sudden acceleration rise or collision lags, for example ejection or undocking force tweaks, as they may cause crew to lose consciousness or even die of excessive g forces.
@@ -48,4 +44,4 @@ This menu allows to enable/disable IVA/maincam visual effects and Kerbal g limit
 - Negative g-effects (redout) can be countered by positive over g and vice versa.
   
 **To be implemented:**
-- using Shaders instead of pictures
+- option to choose between stock and this mods g effects calculation
