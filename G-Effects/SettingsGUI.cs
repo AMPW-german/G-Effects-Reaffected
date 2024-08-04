@@ -121,13 +121,13 @@ namespace G_Effects
         public string RedoutText = string.Empty;
 
         [GameParameters.CustomIntParameterUI("Red:", minValue = 0, maxValue = 255, stepSize = 1)]
-        public int red = (int)Configuration.redoutRGB.r;
+        public int red = (int)Configuration.redoutRGB.r * 255;
 
         [GameParameters.CustomIntParameterUI("Green:", minValue = 0, maxValue = 255, stepSize = 1)]
-        public int green = (int)Configuration.redoutRGB.g;
+        public int green = (int)Configuration.redoutRGB.g * 255;
 
         [GameParameters.CustomIntParameterUI("Blue:", minValue = 0, maxValue = 255, stepSize = 1)]
-        public int blue = (int)Configuration.redoutRGB.b;
+        public int blue = (int)Configuration.redoutRGB.b * 255;
         #endregion
 
         [GameParameters.CustomParameterUI("enableLogging")]

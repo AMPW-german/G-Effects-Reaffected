@@ -147,9 +147,9 @@ namespace G_Effects
             mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().mainCamGreyout;
             IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().IVAGreyout;
             gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().gLocFadeSpeed;
-            redoutRGB.r = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().red / 255;
-            redoutRGB.g = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().green / 255;
-            redoutRGB.b = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().blue / 255;
+            redoutRGB.r = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().red / 255;
+            redoutRGB.g = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().green / 255;
+            redoutRGB.b = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().blue / 255;
 
             //sound
             breathThresholdTime = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Sound_1>().breathThresholdTime;
@@ -288,7 +288,7 @@ namespace G_Effects
             nodes[0].SetValue("mainCamGreyout", mainCamGreyout, "mainCam is used in 3rd person view. The effect is not disabled by default but it eats up stock reenty and mach visual effects");
             nodes[0].SetValue("gLocFadeSpeed", gLocFadeSpeed, "Speed of fade-out visual effect when a kerbal is losing consciousness");
             nodes[0].SetValue("gLocScreenWarning", gLocScreenWarning, "Text of a warning displayed when a kerbal loses consciousness. Leave empty to disable.");
-            nodes[0].SetValue("redoutRGB", $"{redoutRGB.r*255},{redoutRGB.g*255},{redoutRGB.b*255}", "Red, green, blue components of redout color (you can change it even to greenout in case you are certain that green men must have green blood)\n\n\t//You can disable specific sound effects by specifying 0 volumes.\n\t//Volumes are specified as a multiplier to KSP voice volume global setting (less than 1 means quieter, greater than 1 means louder)");
+            nodes[0].SetValue("redoutRGB", $"{Convert.ToInt32(redoutRGB.r*255)},{redoutRGB.g*255},{redoutRGB.b*255}", "Red, green, blue components of redout color (you can change it even to greenout in case you are certain that green men must have green blood)\n\n\t//You can disable specific sound effects by specifying 0 volumes.\n\t//Volumes are specified as a multiplier to KSP voice volume global setting (less than 1 means quieter, greater than 1 means louder)");
 
             //Sound
             nodes[0].SetValue("masterVolume", masterVolume, "Total volume multiplier (affects only the volume of this mod)");
