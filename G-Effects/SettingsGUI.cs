@@ -16,7 +16,7 @@ namespace G_Effects
         [GameParameters.CustomParameterUI("g limits")]
         public bool gLimits = true;
 
-        [GameParameters.CustomFloatParameterUI("gResistance", toolTip = "Expresses the ability of the blood system to resist G effectsloat", minValue = 0, maxValue = 600, addTextField = true, asPercentage = false, displayFormat = "0")]
+        [GameParameters.CustomFloatParameterUI("gResistance", toolTip = "Expresses the ability of the blood system to resist G effects. Value of 100 is equal to a rookie not wearing a g-suit", minValue = 0, maxValue = 600, addTextField = true, asPercentage = false, displayFormat = "0")]
         public float gResistance = 300;
 
         [GameParameters.CustomFloatParameterUI("downwardGMultiplier", toolTip = "Multiplier of a G force that pulls a kerbal downwards", minValue = 0, maxValue = 2, addTextField = true, asPercentage = false, displayFormat = "0.00")]
@@ -114,8 +114,11 @@ namespace G_Effects
         [GameParameters.CustomParameterUI("IVA effects")]
         public bool IVAGreyout = Configuration.IVAGreyout;
 
-        [GameParameters.CustomFloatParameterUI("gLoc Fadespeed", toolTip = "Speed of fade-out visual effect when a kerbal is losing consciousness", minValue = 0f, maxValue = 10f, addTextField = true, asPercentage = false)]
-        public float gLocFadeSpeed = Configuration.gLocFadeSpeed;
+        [GameParameters.CustomFloatParameterUI("gLoc fade in speed", toolTip = "seconds of fade-in visual effect when a kerbal is losing consciousness", minValue = 0f, maxValue = 5f, addTextField = true, asPercentage = false)]
+        public float gLocFadeInSpeed = Configuration.gLocFadeInSpeed;
+
+        [GameParameters.CustomFloatParameterUI("gLoc fade out speed", toolTip = "seconds of fade-out visual effect when a kerbal is losing consciousness", minValue = 0f, maxValue = 5f, addTextField = true, asPercentage = false)]
+        public float gLocFadeOutSpeed = Configuration.gLocFadeOutSpeed;
 
         [GameParameters.CustomStringParameterUI("Redout RGB:")]
         public string RedoutText = string.Empty;

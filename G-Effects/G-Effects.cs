@@ -438,7 +438,7 @@ namespace G_Effects
         {
             kerbalGData.stopAGSM(0);
             kerbalGData.resetBreath();
-            kerbalGData.gLocFadeAmount += Configuration.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
+            kerbalGData.gLocFadeAmount += TimeWarp.fixedDeltaTime / Configuration.gLocFadeInSpeed;
             if (kerbalGData.gLocFadeAmount > G_Effects.MAX_GLOC_FADE)
             {
                 kerbalGData.gLocFadeAmount = G_Effects.MAX_GLOC_FADE;
@@ -451,10 +451,10 @@ namespace G_Effects
                         ScreenMessages.PostScreenMessage(Configuration.gLocScreenWarning);
                     }
                     Vessel vessel = crewMember.KerbalRef.InVessel;
-                    if (!hasProbeCore(vessel))
+                    /*if (!hasProbeCore(vessel))
                     {
                         vessel.ActionGroups.SetGroup(KSPActionGroup.SAS, false);
-                    }
+                    }*/
                     InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, CONTROL_LOCK_ID);
                     crewMember.SetInactive(60000, false);
                 }
@@ -464,7 +464,7 @@ namespace G_Effects
 
         void reboundConsciousness(ProtoCrewMember crewMember, KerbalGState kerbalGData, bool isCommander)
         {
-            kerbalGData.gLocFadeAmount -= Configuration.gLocFadeSpeed * TimeWarp.fixedDeltaTime;
+            kerbalGData.gLocFadeAmount -= TimeWarp.fixedDeltaTime / Configuration.gLocFadeOutSpeed;
             if (kerbalGData.gLocFadeAmount <= 0)
             {
                 kerbalGData.gLocFadeAmount = 0;

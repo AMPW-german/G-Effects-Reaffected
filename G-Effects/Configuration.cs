@@ -45,7 +45,9 @@ namespace G_Effects
         public static bool mainCamGreyout = true; //mainCam is used in 3rd person view. The effect is disabled by default because it eats up stock reenty and mach visual effects
         public static String gLocScreenWarning = null; //Text of a warning displayed when a kerbal loses consience. Leave empty to disable.
         public static Color redoutRGB = Color.red; //Red, green, blue components of a redout color (in case you are certain that green men must have green blood, for example)
-        public static float gLocFadeSpeed = 4f; //Speed of fade-out visual effect when a kerbal is losing consciousness
+        public static float gLocFadeInSpeed = 4f; //Speed of fade-out visual effect when a kerbal is losing consciousness
+        public static float gLocFadeOutSpeed = 4f; //Speed of fade-out visual effect when a kerbal is losing consciousness
+        //TODO: start the fade in effects slightly before losing consciouness
 
         //Sound
         public static float breathThresholdTime = 8; //Time threshold in seconds for a kerbal needed to breathe after AGSM
@@ -95,7 +97,8 @@ namespace G_Effects
             Glimits_1.gDeathEnabled = gDeathEnabled;
 
             G_Effects_Visuals Visual = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>();
-            Visual.gLocFadeSpeed = gLocFadeSpeed;
+            Visual.gLocFadeInSpeed = gLocFadeInSpeed;
+            Visual.gLocFadeOutSpeed = gLocFadeOutSpeed;
             Visual.red = Convert.ToInt32(redoutRGB.r * 255f);
             Visual.green = Convert.ToInt32(redoutRGB.g * 255f);
             Visual.blue = Convert.ToInt32(redoutRGB.b * 255f);
@@ -146,7 +149,8 @@ namespace G_Effects
             //visuals
             mainCamGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().mainCamGreyout;
             IVAGreyout = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().IVAGreyout;
-            gLocFadeSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().gLocFadeSpeed;
+            gLocFadeInSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().gLocFadeInSpeed;
+            gLocFadeOutSpeed = HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().gLocFadeOutSpeed;
             redoutRGB.r = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().red / 255;
             redoutRGB.g = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().green / 255;
             redoutRGB.b = (float) HighLogic.CurrentGame.Parameters.CustomParams<G_Effects_Visuals>().blue / 255;
@@ -237,7 +241,8 @@ namespace G_Effects
                     redoutRGB.b = b / 255;
                 }
             }
-            float.TryParse(nodes[0].GetValue("gLocFadeSpeed"), out gLocFadeSpeed);
+            float.TryParse(nodes[0].GetValue("gLocFadeInSpeed"), out gLocFadeInSpeed);
+            float.TryParse(nodes[0].GetValue("gLocFadeOutSpeed"), out gLocFadeOutSpeed);
             float.TryParse(nodes[0].GetValue("breathThresholdTime"), out breathThresholdTime);
             int.TryParse(nodes[0].GetValue("maxBreaths"), out maxBreaths);
             int.TryParse(nodes[0].GetValue("minBreaths"), out minBreaths);
@@ -286,7 +291,8 @@ namespace G_Effects
             //Greyout
             nodes[0].SetValue("IVAGreyout", IVAGreyout, "Greyout effect in IVA view");
             nodes[0].SetValue("mainCamGreyout", mainCamGreyout, "mainCam is used in 3rd person view. The effect is not disabled by default but it eats up stock reenty and mach visual effects");
-            nodes[0].SetValue("gLocFadeSpeed", gLocFadeSpeed, "Speed of fade-out visual effect when a kerbal is losing consciousness");
+            nodes[0].SetValue("gLocFadeInSpeed", gLocFadeInSpeed, "seconds of fade-in visual effect when a kerbal is losing consciousness");
+            nodes[0].SetValue("gLocFadeOutSpeed", gLocFadeOutSpeed, "seconds of fade-out visual effect when a kerbal is regaining consciousness");
             nodes[0].SetValue("gLocScreenWarning", gLocScreenWarning, "Text of a warning displayed when a kerbal loses consciousness. Leave empty to disable.");
             nodes[0].SetValue("redoutRGB", $"{Convert.ToInt32(redoutRGB.r*255)},{redoutRGB.g*255},{redoutRGB.b*255}", "Red, green, blue components of redout color (you can change it even to greenout in case you are certain that green men must have green blood)\n\n\t//You can disable specific sound effects by specifying 0 volumes.\n\t//Volumes are specified as a multiplier to KSP voice volume global setting (less than 1 means quieter, greater than 1 means louder)");
 
