@@ -1,11 +1,11 @@
-C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.AssemblyReference.cache
-C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.CoreCompileInputs.cache
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\G-Effects.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\G-Effects.pdb
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\Assembly-CSharp.dll
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\ClickThroughBlocker.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\KSPAssets.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\KSPAssets.XmlSerializers.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\KSPTrackIR.dll
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\ToolbarControl.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.AssetBundleModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.AudioModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.CoreModule.dll
@@ -67,6 +67,8 @@ C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.XRModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\UnityEngine.InputModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Debug\TDx.TDxInput.dll
-C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.CopyComplete
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.AssemblyReference.cache
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.CoreCompileInputs.cache
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.csproj.Up2Date
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Debug\G-Effects.pdb

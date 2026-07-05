@@ -1,8 +1,10 @@
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\G-Effects.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\Assembly-CSharp.dll
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\ClickThroughBlocker.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\KSPAssets.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\KSPAssets.XmlSerializers.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\KSPTrackIR.dll
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\ToolbarControl.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\UnityEngine.AssetBundleModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\UnityEngine.AudioModule.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\UnityEngine.CoreModule.dll
@@ -66,5 +68,5 @@ C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\UnityEngin
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\bin\Release\TDx.TDxInput.dll
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Release\G-Effects.csproj.AssemblyReference.cache
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Release\G-Effects.csproj.CoreCompileInputs.cache
-C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Release\G-Effects.csproj.CopyComplete
+C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Release\G-Effects.csproj.Up2Date
 C:\Users\AMPW\source\repos\G-Effects-Reaffected\G-Effects\obj\Release\G-Effects.dll
