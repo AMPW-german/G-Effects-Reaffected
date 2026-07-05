@@ -270,11 +270,26 @@ namespace G_Effects
                     kerbalGDict.Add(crewMember.name, gState);
                 }
                 //Calculate modifer by Kerbal individual charateristics
-                float kerbalModifier = 1;
-                Configuration.traitModifiers.TryGetValue(crewMember.experienceTrait.Title, out kerbalModifier);
+                //Note: Dictionary.TryGetValue sets the out value to 0 (default(float)) when the key
+                //is not found, so an unmodded "float kerbalModifier = 1;" default is silently
+                //overwritten for any trait not listed in TRAIT_MODIFIERS (e.g. modded passenger
+                //traits like "Citizen"). A 0 modifier then divides by zero in the G calculations
+                //below, producing Infinity/NaN and an ArithmeticException from Math.Sign() every
+                //FixedUpdate. Honor the lookup result and fall back to a neutral 1.0 instead.
+                float kerbalModifier;
+                if (!Configuration.traitModifiers.TryGetValue(crewMember.experienceTrait.Title, out kerbalModifier))
+                {
+                    kerbalModifier = 1;
+                }
                 if (crewMember.gender == ProtoCrewMember.Gender.Female)
                 {
                     kerbalModifier *= Configuration.femaleModifier;
+                }
+                //Guard against a non-positive modifier (e.g. a trait or femaleModifier configured
+                //to 0) which would divide by zero in the cumulativeG calculations below.
+                if (kerbalModifier <= 0)
+                {
+                    kerbalModifier = 1;
                 }
 
                 //Calculate G forces
